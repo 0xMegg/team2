@@ -510,6 +510,10 @@ body {
   height: 2.5rem;
 }
 
+.h-14 {
+  height: 3.5rem;
+}
+
 .h-16 {
   height: 4rem;
 }
@@ -540,6 +544,10 @@ body {
 
 .h-9 {
   height: 2.25rem;
+}
+
+.h-full {
+  height: 100%;
 }
 
 .h-px {
@@ -580,6 +588,10 @@ body {
 
 .w-9 {
   width: 2.25rem;
+}
+
+.w-\[768px\] {
+  width: 768px;
 }
 
 .w-full {
@@ -795,12 +807,22 @@ body {
   background-color: hsl(var(--primary));
 }
 
+.bg-purple-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(216, 180, 254, var(--tw-bg-opacity, 1));
+}
+
 .bg-secondary {
   background-color: hsl(var(--secondary));
 }
 
 .bg-transparent {
   background-color: rgba(0, 0, 0, 0);
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgba(255, 255, 255, var(--tw-bg-opacity, 1));
 }
 
 .bg-gradient-to-r {
@@ -828,6 +850,10 @@ body {
 
 .p-1 {
   padding: .25rem;
+}
+
+.p-10 {
+  padding: 2.5rem;
 }
 
 .p-3 {
