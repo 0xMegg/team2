@@ -1,10 +1,10 @@
 import Header from "./components/header";
-import TestComponent from "./components/test-comp";
+import MainTitleComponent from "./components/main-title";
 
 export default function Home() {
   return (
     <div className="">
-      <TestComponent />
+      <MainTitleComponent />
       <h1>Hello World</h1>
     </div>
   );

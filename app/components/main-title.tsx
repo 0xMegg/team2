@@ -1,6 +1,6 @@
 import { Input } from "@/app/components/ui/input";
 
-export default function TestComponent() {
+export default function MainTitleComponent() {
   return (
     <div className="flex flex-col w-full h-full items-center bg-purple-300 p-10">
       {/* 설문 제목 */}
