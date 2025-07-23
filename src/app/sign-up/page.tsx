@@ -17,9 +17,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import { toast } from "sonner";
+
 import SeatsTable from "@/components/seatsTable";
+import { supabase } from "@/utils/client";
 
 const formSchema = z.object({
+  email: z.email({
+    message: "Invalid email address.",
+  }),
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
@@ -45,6 +51,7 @@ export default function SignUp() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      email: "finero91@gmail.com",
       username: "un",
       password: "ps",
       confirmPassword: "ps",
@@ -55,11 +62,34 @@ export default function SignUp() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            username: values.username,
+            terms: values.terms,
+            profileImage: values.profileImage,
+            seat: values.seat,
+          },
+        },
+      });
+
+      if (data) {
+        console.log(data);
+        toast.success("Sign up successful");
+      }
+
+      if (error) {
+        toast.error("Sign up failed");
+        throw error;
+      }
+    } catch (error) {
+      console.error("catch error", error);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -180,7 +210,6 @@ export default function SignUp() {
             </FormItem>
           )}
         />
-
         <Button type="submit">Submit</Button>
       </form>
     </Form>
