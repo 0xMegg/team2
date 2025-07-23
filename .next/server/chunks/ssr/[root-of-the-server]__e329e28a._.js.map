@@ -1,8 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///Users/mero/Dev/11.sniper/team2/app/components/test-comp.tsx"],"sourcesContent":["// import { Input } from \"@/app/components/ui/input\";\n\nexport default function TestComponent() {\n  <div>\n    {/* 설문 제목\n    <div className=\"w-[768px] h-34 min-h-34 bg-white flex flex-col rounded-sm\">\n      설문제목 첫째줄\n      <div className=\"flex w-full p-3\">\n        <Input className=\"p-6 w-full h-14\" />\n      </div>\n    </div> */}\n    asdf\n  </div>;\n}\n"],"names":[],"mappings":"AAAA,qDAAqD;;;;;;AAEtC,SAAS;kBACtB,8OAAC;kBAOW;;;;;;AAGd","debugId":null}},
-    {"offset": {"line": 37, "column": 0}, "map": {"version":3,"sources":["file:///Users/mero/Dev/11.sniper/team2/app/page.tsx"],"sourcesContent":["import Header from \"./components/header\";\nimport TestComponent from \"./components/test-comp\";\n\nexport default function Home() {\n  return (\n    <div className=\"\">\n      <Header />\n      <TestComponent />\n      <h1>Hello World</h1>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AAAA;AACA;;;;AAEe,SAAS;IACtB,qBACE,8OAAC;QAAI,WAAU;;0BACb,8OAAC,4HAAA,CAAA,UAAM;;;;;0BACP,8OAAC,kIAAA,CAAA,UAAa;;;;;0BACd,8OAAC;0BAAG;;;;;;;;;;;;AAGV","debugId":null}}]
-}

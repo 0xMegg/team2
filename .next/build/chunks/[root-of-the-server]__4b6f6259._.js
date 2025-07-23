@@ -27,14 +27,13 @@ module.exports = mod;
 "[project]/postcss.config.mjs [postcss] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
-/** @type {import('postcss-load-config').Config} */ __turbopack_context__.s({
+__turbopack_context__.s({
     "default": ()=>__TURBOPACK__default__export__
 });
 const config = {
-    plugins: {
-        tailwindcss: {},
-        autoprefixer: {}
-    }
+    plugins: [
+        "@tailwindcss/postcss"
+    ]
 };
 const __TURBOPACK__default__export__ = config;
 }),

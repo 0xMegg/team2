@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///Users/mero/Dev/11.sniper/team2/app/test/page.tsx"],"sourcesContent":["import Image from \"next/image\";\nimport { createClient } from \"@/utils/supabase/server\";\n\nexport default function TestPage() {\n  return (\n    <div>\n      TestPage\n      <div>\n        <Image src=\"/img/test.png\" alt=\"test\" width={100} height={100} />\n      </div>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AAAA;;;AAGe,SAAS;IACtB,qBACE,8OAAC;;YAAI;0BAEH,8OAAC;0BACC,cAAA,8OAAC,6HAAA,CAAA,UAAK;oBAAC,KAAI;oBAAgB,KAAI;oBAAO,OAAO;oBAAK,QAAQ;;;;;;;;;;;;;;;;;AAIlE","debugId":null}}]
-}
