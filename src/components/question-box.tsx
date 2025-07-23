@@ -20,6 +20,7 @@ import MultipleChoiceOptions from "./question-types/MultipleChoiceOptions";
 import CheckboxOptions from "./question-types/CheckboxOptions";
 import DropdownOptions from "./question-types/DropdownOptions";
 import FileUploadArea from "./question-types/FileUploadArea";
+import BlogAdress from "./question-types/BlogAdress";
 
 export default function QuestionBoxComponent() {
   const [selectedQuestionType, setSelectedQuestionType] = useState("one");
@@ -39,6 +40,8 @@ export default function QuestionBoxComponent() {
         return <DropdownOptions />;
       case "six": // 파일 업로드
         return <FileUploadArea />;
+      case "seven": // 주소
+        return <BlogAdress />;
       default:
         return null; // 기본적으로는 아무것도 렌더링하지 않습니다.
     }
@@ -63,6 +66,7 @@ export default function QuestionBoxComponent() {
             <SelectItem value="four">체크박스</SelectItem>
             <SelectItem value="five">드롭박스</SelectItem>
             <SelectItem value="six">파일 업로드</SelectItem>
+            <SelectItem value="seven">주소</SelectItem>
           </SelectContent>
         </Select>
       </div>
