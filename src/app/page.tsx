@@ -1,3 +1,7 @@
+"use client";
+
+import React, { useState } from "react";
+
 // import { supabase } from "../../utils/client";
 // import { useEffect } from "react";
 import MainPartComponent from "../components/main-part";
@@ -13,12 +17,18 @@ export default function Home() {
   // useEffect(() => {
   //   getData();
   // }, []);
+  const [questionBoxes, setQuestionBoxes] = useState([0]);
+  const handleAddItem = () => {
+    setQuestionBoxes((prevBoxes) => [...prevBoxes, prevBoxes.length]);
+  };
 
   return (
     <div>
-      <MainPartComponent>
+      <MainPartComponent onAddItem={handleAddItem}>
         <MainTitleComponent />
-        <QuestionBoxComponent />
+        {questionBoxes.map((_, index) => (
+          <QuestionBoxComponent key={index} />
+        ))}
       </MainPartComponent>
     </div>
   );
