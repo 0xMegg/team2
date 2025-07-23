@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import SeatsTable from "@/components/seatsTable";
 
 const formSchema = z.object({
@@ -31,6 +32,9 @@ const formSchema = z.object({
   terms: z.boolean().refine((val) => val, {
     message: "You must accept the terms and conditions.",
   }),
+  profileImage: z.any().refine((val) => val, {
+    message: "You must select a profile image.",
+  }),
   seat: z.number().refine((val) => val, {
     message: "You must select a seat.",
   }),
@@ -41,10 +45,11 @@ export default function SignUp() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      password: "",
-      confirmPassword: "",
-      terms: false,
+      username: "un",
+      password: "ps",
+      confirmPassword: "ps",
+      terms: true,
+      profileImage: "",
       seat: 0,
     },
   });
@@ -59,6 +64,7 @@ export default function SignUp() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* 아이디 입력 */}
         <FormField
           control={form.control}
           name="username"
@@ -75,6 +81,7 @@ export default function SignUp() {
             </FormItem>
           )}
         />
+        {/* 비밀번호 입력 */}
         <FormField
           control={form.control}
           name="password"
@@ -91,6 +98,7 @@ export default function SignUp() {
             </FormItem>
           )}
         />
+        {/* 비밀번호 확인 */}
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -111,6 +119,7 @@ export default function SignUp() {
             </FormItem>
           )}
         />
+        {/* 약관 동의 */}
         <FormField
           control={form.control}
           name="terms"
@@ -122,7 +131,6 @@ export default function SignUp() {
                   id="terms"
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  defaultChecked
                 />
               </FormControl>
               <FormDescription>
@@ -132,7 +140,33 @@ export default function SignUp() {
             </FormItem>
           )}
         />
-
+        {/* 프로필 이미지 */}
+        <FormField
+          control={form.control}
+          name="profileImage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Profile Image</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      field.onChange(file.name);
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormDescription>
+                You must select a profile image.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* 좌석 선택 */}
         <FormField
           control={form.control}
           name="seat"
@@ -146,6 +180,7 @@ export default function SignUp() {
             </FormItem>
           )}
         />
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>
