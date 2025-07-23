@@ -1,5 +1,8 @@
 // import { supabase } from "../../utils/client";
 // import { useEffect } from "react";
+import MainPartComponent from "../components/main-part";
+import MainTitleComponent from "../components/main-title";
+import QuestionBoxComponent from "../components/question-box";
 
 export default function Home() {
   // const getData = async () => {
@@ -13,7 +16,10 @@ export default function Home() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">Hello World</h1>
+      <MainPartComponent>
+        <MainTitleComponent />
+        <QuestionBoxComponent />
+      </MainPartComponent>
     </div>
   );
 }
