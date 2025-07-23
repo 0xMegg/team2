@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Trash2Icon, Copy, Image } from "lucide-react";
+import { useSurveyStore } from "@/store/surveyStore"; // Zustand import 추가
 
 export default function MainTitleComponent() {
   return (

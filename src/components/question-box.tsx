@@ -22,6 +22,54 @@ import DropdownOptions from "./question-types/DropdownOptions";
 import FileUploadArea from "./question-types/FileUploadArea";
 import BlogAdress from "./question-types/BlogAdress";
 
+// 7. 이미지 URL 입력
+const ImageInputArea = () => {
+  const [images, setImages] = useState([{ id: Date.now(), url: "" }]);
+
+  const addImage = () => {
+    setImages([...images, { id: Date.now(), url: "" }]);
+  };
+
+  const removeImage = (id: number) => {
+    if (images.length === 1) return alert("최소 1개는 남겨야 합니다.");
+    setImages(images.filter((img) => img.id !== id));
+  };
+
+  const handleChange = (id: number, value: string) => {
+    setImages(
+      images.map((img) => (img.id === id ? { ...img, url: value } : img))
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      {images.map((img, index) => (
+        <div key={img.id} className="flex items-center gap-3">
+          <Input
+            placeholder={`이미지 URL ${index + 1}`}
+            value={img.url}
+            onChange={(e) => handleChange(img.id, e.target.value)}
+            type="url"
+          />
+          <img
+            src={img.url}
+            alt={`img-${index}`}
+            className="w-16 h-16 object-cover rounded border"
+            onError={(e) => (e.currentTarget.src = "")}
+          />
+          <Trash2Icon
+            className="w-4 h-4 text-gray-400 cursor-pointer hover:text-red-500"
+            onClick={() => removeImage(img.id)}
+          />
+        </div>
+      ))}
+      <button className="text-blue-600 text-sm w-fit mt-1" onClick={addImage}>
+        + 이미지 추가
+      </button>
+    </div>
+  );
+};
+
 export default function QuestionBoxComponent() {
   const [selectedQuestionType, setSelectedQuestionType] = useState("one");
 
@@ -42,6 +90,8 @@ export default function QuestionBoxComponent() {
         return <FileUploadArea />;
       case "seven": // 주소
         return <BlogAdress />;
+      case "eight": // 이미지 URL 입력
+        return <ImageInputArea />;
       default:
         return null; // 기본적으로는 아무것도 렌더링하지 않습니다.
     }
@@ -67,6 +117,7 @@ export default function QuestionBoxComponent() {
             <SelectItem value="five">드롭박스</SelectItem>
             <SelectItem value="six">파일 업로드</SelectItem>
             <SelectItem value="seven">주소</SelectItem>
+            <SelectItem value="eight">이미지</SelectItem>
           </SelectContent>
         </Select>
       </div>
