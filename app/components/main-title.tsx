@@ -1,4 +1,4 @@
-import { Input } from "@/app/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -10,12 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@radix-ui/react-select";
 import { Trash2Icon, Copy, Image } from "lucide-react";
 
 export default function MainTitleComponent() {
   return (
-    <div className="flex flex-col w-full h-full items-center bg-purple-300 p-10 gap-5">
+    <>
       {/* 설문 제목 */}
       <div className="w-[768px] h-34 min-h-34 bg-white flex flex-col rounded-sm">
         {/* 설문제목 첫째줄 */}
@@ -57,9 +56,7 @@ export default function MainTitleComponent() {
           </Select>
         </div>
         {/* 질문 내용 */}
-        <div className="w-full my-3">
-          <Input placeholder="질문 내용을 입력하세요" />
-        </div>
+        <div className="w-full my-3"></div>
         {/* 질문 푸터 */}
         <div className="w-full flex justify-end gap-3 px-5 my-1">
           <button className="size-icon">
@@ -74,6 +71,6 @@ export default function MainTitleComponent() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
