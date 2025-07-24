@@ -12,18 +12,11 @@ export default function Home() {
     console.log(test);
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const [questionBoxes, setQuestionBoxes] = useState([0]);
-  const handleAddItem = () => {
-    setQuestionBoxes((prevBoxes) => [...prevBoxes, prevBoxes.length]);
-  };
-
   return (
     <div className="flex items-center justify-center min-w-100 min-h-100 bg-[#ffd90066]">
-      <Link href="/question">홈</Link>
+      <Link className=" border-2 border-amber-600" href="/question">
+        설문
+      </Link>
     </div>
   );
 }
