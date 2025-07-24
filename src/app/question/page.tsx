@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 
-import { supabase } from "../../utils/client";
+import { supabase } from "../../../utils/client";
 import { useEffect } from "react";
-import Link from "next/link";
+import MainPartComponent from "../../components/main-part";
+import MainTitleComponent from "../../components/main-title";
+import QuestionBoxComponent from "../../components/question-box";
 
 export default function Home() {
   const getData = async () => {
@@ -22,8 +24,13 @@ export default function Home() {
   };
 
   return (
-    <div className="flex items-center justify-center min-w-100 min-h-100 bg-[#ffd90066]">
-      <Link href="/question">홈</Link>
+    <div>
+      <MainPartComponent onAddItem={handleAddItem}>
+        <MainTitleComponent />
+        {questionBoxes.map((_, index) => (
+          <QuestionBoxComponent key={index} />
+        ))}
+      </MainPartComponent>
     </div>
   );
 }
