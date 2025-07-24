@@ -94,6 +94,21 @@ export default function SignUp() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* 이메일 입력 */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Email" {...field} />
+              </FormControl>
+              <FormDescription>This is your email.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {/* 아이디 입력 */}
         <FormField
           control={form.control}
