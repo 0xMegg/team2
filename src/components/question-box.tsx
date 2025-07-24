@@ -106,7 +106,7 @@ export default function QuestionBoxComponent() {
           value={selectedQuestionType} // 현재 선택된 값 (상태)을 여기에 넣어줍니다.
           onValueChange={setSelectedQuestionType} // 선택이 바뀔 때 이 함수를 호출하여 상태를 업데이트합니다.
         >
-          <SelectTrigger className="w-[280px]">
+          <SelectTrigger className="w-[280px] cursor-pointer">
             <SelectValue placeholder="질문 유형" />
           </SelectTrigger>
           <SelectContent>
@@ -125,12 +125,12 @@ export default function QuestionBoxComponent() {
       <div className="w-full my-3">{renderQuestionSpecificContent()}</div>
       {/* 질문 푸터 */}
       <div className="w-full flex justify-end gap-3 px-5 my-1">
-        <button>
+        <button className="cursor-pointer">
           <Trash2Icon className="w-4 h-4" />
         </button>
-        <div className="px-3 flex items-center space-x-2 border-l border-gray-300">
-          <Label htmlFor="required-switch">필수</Label>
-          <Switch id="required-switch" />
+        <div className="px-3 flex items-center space-x-2 border-l border-gray-300 ">
+          <Label htmlFor="required-switch ">필수</Label>
+          <Switch id="required-switch " className="cursor-pointer" />
         </div>
       </div>
     </div>

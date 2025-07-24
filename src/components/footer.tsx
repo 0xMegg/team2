@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-amber-300 py-5 flex flex-col items-center gap-2">
+    <footer className="w-full h-34 bg-amber-300 py-5 flex flex-col items-center gap-2">
       {/* 타이틀 */}
       <p className="text-sm font-semibold text-white">2조</p>
 
