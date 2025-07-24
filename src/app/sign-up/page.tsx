@@ -51,11 +51,11 @@ export default function SignUp() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "finero91@gmail.com",
-      username: "un",
-      password: "ps",
-      confirmPassword: "ps",
-      terms: true,
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      terms: false,
       profileImage: "",
       seat: 0,
     },
