@@ -6,7 +6,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -33,6 +32,8 @@ import {
 
 import { toast } from "sonner";
 import Link from "next/link";
+import { useAuthStore } from "@/stores/auth";
+import { GuestGuard } from "@/components/auth-guard";
 
 const formSchema = z.object({
   email: z.email({
@@ -43,10 +44,11 @@ const formSchema = z.object({
   }),
 });
 
-export default function SignIn() {
+function SignInContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { login } = useAuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,38 +59,40 @@ export default function SignIn() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
 
-    if (error) {
-      toast.error("회원정보가 일치하지 않습니다.");
-    } else if (!error && data.user && data.session) {
-      toast.success("로그인을 성공하였습니다.");
-      router.push("/"); // 메인 페이지로 리다이렉션
-      console.log(data);
+      if (error) {
+        toast.error("회원정보가 일치하지 않습니다.");
+        console.error("로그인 에러:", error);
+      } else if (!error && data.user && data.session) {
+        // Zustand 스토어에 사용자 정보와 토큰 저장
+        const user = {
+          id: data.user.id,
+          email: data.user.email!,
+          name:
+            data.user.user_metadata?.name ||
+            data.user.email?.split("@")[0] ||
+            "사용자",
+        };
 
-      // supabase에서 사용자 정보를 받는 function 만들기.
-      // Zustand 측으로 Supabase 쪽에서 전달받은 User 정보를 Store에 저장한다.
+        const accessToken = data.session.access_token;
+
+        // 인증 스토어에 로그인 정보 저장
+        login(user, accessToken);
+
+        toast.success("로그인을 성공하였습니다.");
+        router.push("/"); // 메인 페이지로 리다이렉션
+        console.log("로그인 성공:", { user, accessToken });
+      }
+    } catch (error) {
+      console.error("로그인 중 오류 발생:", error);
+      toast.error("로그인 중 오류가 발생했습니다.");
     }
   };
-  // const signIn = async () => {
-  //   const { data, error } = await supabase.auth.signInWithPassword({
-  //     email,
-  //     password,
-  //   });
-
-  //   if (data) {
-  //     console.log(data);
-  //   }
-
-  //   if (error) {
-  //   }
-
-  //   if (error) {
-  //     console.error("catch error", error);
-  //   }
 
   return (
     <div className="flex flex-1 flex-col w-full min-h-[calc(100vh-216px)] items-center justify-center bg-[#ffd90066]">
@@ -227,5 +231,13 @@ export default function SignIn() {
         </div>
       </Card>
     </div>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <GuestGuard>
+      <SignInContent />
+    </GuestGuard>
   );
 }
