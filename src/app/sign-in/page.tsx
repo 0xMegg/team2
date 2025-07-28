@@ -95,38 +95,122 @@ function SignInContent() {
   };
 
   return (
-    <div className="flex flex-1 flex-col w-full min-h-[calc(100vh-216px)] items-center justify-center bg-[#ffd90066] ">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>로그인</CardTitle>
-          <CardDescription>로그인을 위한 정보를 입력해주세요.</CardDescription>
-          <CardAction>
-            <Button
-              variant="link"
-              className="cursor-pointer"
-              onClick={() => router.push("/sign-up")}
-            >
-              회원가입
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col gap-3"
-            >
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
+    <div className="flex flex-1 flex-col w-full min-h-[calc(100vh-216px)] items-center justify-center bg-[#ffd90066]">
+      <Card className="relative w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <img
+            src="/favicon.png"
+            alt="계란1"
+            className="absolute top-4 left-4 w-8 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란2"
+            className="absolute top-16 right-8 w-10 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란3"
+            className="absolute bottom-12 left-10 w-12 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란4"
+            className="absolute bottom-4 right-6 w-9 opacity-20"
+          />
+
+          <img
+            src="/favicon.png"
+            alt="계란5"
+            className="absolute top-1/2 left-1 w-9 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란6"
+            className="absolute top-1/3 right-1/4 w-11 opacity-15"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란7"
+            className="absolute bottom-1/2 left-1/3 w-7 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란8"
+            className="absolute bottom-20 right-1/5 w-10 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란9"
+            className="absolute top-[70%] left-[45%] w-8 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란10"
+            className="absolute bottom-[30%] right-[35%] w-12 opacity-30"
+          />
+        </div>
+
+        <div className="relative z-10">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-yellow-600">
+              로그인
+            </CardTitle>
+            <CardDescription className="text-sm pb-2 text-gray-500">
+              로그인을 위한 정보를 입력해주세요.
+            </CardDescription>
+            <CardAction>
+              <Button
+                variant="link"
+                className="!no-underline transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
+                onClick={() => router.push("/sign-up")}
+              >
+                회원가입
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-3"
+              >
+                <div className="flex flex-col gap-6">
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="이메일을 입력해주세요"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="password"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
+                      <FormItem className="relative">
+                        <div className="w-full flex items-center justify-between">
+                          <FormLabel>Password</FormLabel>
+                          <Link
+                            href={"/sign-in/credentials"}
+                            className="text-sm no-underline"
+                          >
+                            비밀번호를 잊어버리셨나요?
+                          </Link>
+                        </div>
                         <FormControl>
                           <Input
-                            placeholder="이메일을 입력해주세요"
+                            placeholder="비밀번호를 입력해주세요."
                             {...field}
                           />
                         </FormControl>
@@ -134,39 +218,17 @@ function SignInContent() {
                       </FormItem>
                     )}
                   />
+                  <Button
+                    type="submit"
+                    className="transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
+                  >
+                    로그인
+                  </Button>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="relative">
-                      <div className="w-full flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                          href={"/sign-in/credentials"}
-                          className="text-sm underline"
-                        >
-                          비밀번호를 잊어버리셨나요?
-                        </Link>
-                      </div>
-                      <FormControl>
-                        <Input
-                          placeholder="비밀번호를 입력해주세요."
-                          {...field}
-                        />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full cursor-pointer">
-                  로그인
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
+              </form>
+            </Form>
+          </CardContent>
+        </div>
       </Card>
     </div>
   );

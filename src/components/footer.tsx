@@ -35,7 +35,7 @@ export default function Footer() {
 
       {/* 저작권 정보 */}
       <p className="text-xs text-white/80 mt-2">
-        &copy; {new Date().getFullYear()} 계란말이 . All rights reserved.
+        &copy; {new Date().getFullYear()} 후라이잉 . All rights reserved.
       </p>
     </footer>
   );

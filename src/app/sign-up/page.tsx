@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -56,7 +56,7 @@ export default function SignUp() {
       username: "",
       password: "",
       confirmPassword: "",
-      terms: false,
+      terms: true,
       profileImage: "",
       seat: 0,
     },
@@ -92,142 +92,260 @@ export default function SignUp() {
     }
   };
 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); //이미지
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* 이메일 입력 */}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Email" {...field} />
-              </FormControl>
-              <FormDescription>This is your email.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* 아이디 입력 */}
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* 비밀번호 입력 */}
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Password" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* 비밀번호 확인 */}
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Confirm Password"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* 약관 동의 */}
-        <FormField
-          control={form.control}
-          name="terms"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Terms and Conditions</FormLabel>
-              <FormControl>
-                <Checkbox
-                  id="terms"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>
-                You agree to our Terms of Service and Privacy Policy.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* 프로필 이미지 */}
-        <FormField
-          control={form.control}
-          name="profileImage"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Profile Image</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      field.onChange(file.name);
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormDescription>
-                You must select a profile image.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* 좌석 선택 */}
-        <FormField
-          control={form.control}
-          name="seat"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Seat</FormLabel>
-              <FormControl>
-                <SeatsTable seat={field.value} onSeatChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
+      <div className="min-h-screen flex items-center justify-center bg-[#ffd90066] px-4">
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <img
+            src="/favicon.png"
+            alt="계란1"
+            className="absolute top-4 left-4 w-8 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란2"
+            className="absolute top-16 right-8 w-10 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란3"
+            className="absolute bottom-12 left-10 w-12 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란4"
+            className="absolute bottom-4 right-6 w-9 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란5"
+            className="absolute top-1/2 left-1 w-9 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란6"
+            className="absolute top-1/3 right-1/4 w-11 opacity-15"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란7"
+            className="absolute bottom-1/2 left-1/3 w-7 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란8"
+            className="absolute bottom-20 right-1/5 w-10 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란9"
+            className="absolute top-[70%] left-[45%] w-8 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란10"
+            className="absolute bottom-[30%] right-[35%] w-12 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란11"
+            className="absolute top-8 left-1/2 w-9 opacity-15"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란12"
+            className="absolute top-0 right-1/2 w-10 opacity-10"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란13"
+            className="absolute top-1/4 left-[10%] w-7 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란14"
+            className="absolute top-1/4 right-[15%] w-6 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란15"
+            className="absolute top-[60%] left-[10%] w-8 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란16"
+            className="absolute bottom-[10%] left-[5%] w-10 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란17"
+            className="absolute bottom-[15%] right-[10%] w-9 opacity-25"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란18"
+            className="absolute bottom-[5%] left-[40%] w-11 opacity-30"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란19"
+            className="absolute top-[15%] right-[5%] w-8 opacity-20"
+          />
+          <img
+            src="/favicon.png"
+            alt="계란20"
+            className="absolute bottom-[50%] right-[45%] w-7 opacity-30"
+          />
+        </div>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow flex flex-col md:flex-row gap-6"
+        >
+          {/* 아이디 입력 */}
+          <div className="w-80 md:w-1/2 space-y-6">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>사용자</FormLabel>
+                  <FormControl>
+                    <Input placeholder="아이디를 입력해주세요" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* 비밀번호 입력 */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>비밀번호</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="비밀번호를 입력해주세요"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* 비밀번호 확인 */}
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>비밀번호 확인</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="비밀번호를 다시 입력해주세요"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* 약관 동의 */}
+            <FormField
+              control={form.control}
+              name="terms"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>이용약관 동의</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id="terms"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    이용약관 및 개인정보 처리방침에 동의합니다.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* 프로필 이미지 */}
+            <FormField
+              control={form.control}
+              name="profileImage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>프로필 이미지</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          field.onChange(file.name);
+                          const url = URL.createObjectURL(file); // 미리보기용 URL 생성
+                          setPreviewUrl(url); // 상태 저장
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    (선택)이미지를 업로드해주세요
+                  </FormDescription>
+                  <FormMessage />
+                  {/* ✅ 미리보기 박스 추가 */}
+                  {previewUrl && (
+                    <div className="mt-4 w-32 h-32 border rounded-md overflow-hidden">
+                      <img
+                        src={previewUrl}
+                        alt="프로필 미리보기"
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  )}
+                </FormItem>
+              )}
+            />
+          </div>
+          {/* 좌석 선택 */}
+          <div className="w-full md:w-2/3 flex flex-col justify-between space-y-6 ">
+            <FormField
+              control={form.control}
+              name="seat"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className=" font-bold text-yellow-500">
+                    좌석 선택
+                  </FormLabel>
+                  <FormControl>
+                    <SeatsTable
+                      seat={field.value}
+                      onSeatChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>앉은 자리를 선택해주세요</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end">
+              <Button
+                className="self-end transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
+                type="submit"
+              >
+                완료
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </Form>
   );
 }

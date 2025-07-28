@@ -27,6 +27,7 @@ export default function Header() {
         <h1 className="text-xl font-bold text-yellow-700">후라이잉</h1>
       </div>
 
+
       {/* 기능 버튼들 */}
       <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
         <Button variant="outline" className="bg-white text-black text-sm">

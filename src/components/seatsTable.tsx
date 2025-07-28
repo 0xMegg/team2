@@ -15,13 +15,15 @@ export default function SeatsTable({ seat, onSeatChange }: SeatsTableProps) {
   };
 
   const getCardStyle = (seatNumber: number) => {
-    return seat === seatNumber ? "w-10 bg-blue-500 text-white" : "w-10";
+    return seat === seatNumber
+      ? "w-20 h-10 bg-yellow-300 hover:bg-yellow-400 text-white text-center"
+      : "w-20 h-10  hover:bg-yellow-200 text-center";
   };
 
   return (
     <div className="flex flex-col gap-2">
       {rowNumbers.map((rowNumber) => (
-        <div key={rowNumber} className="flex gap-2">
+        <div key={rowNumber} className="flex gap-5">
           <div className="flex">
             <Card
               className={getCardStyle(rowNumber * 6 + 1)}
