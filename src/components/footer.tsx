@@ -9,28 +9,8 @@ export default function Footer() {
       {/* 타이틀 */}
       <p className="text-sm font-semibold text-white">2조</p>
 
-      {/* 링크 버튼 */}
       <div className="flex flex-wrap justify-center gap-2">
-        <Link href="/portfolio/kimjy">
-          <Button variant="secondary" className="text-sm">
-            김준엽
-          </Button>
-        </Link>
-        <Link href="/portfolio/sonmj">
-          <Button variant="secondary" className="text-sm">
-            손민준
-          </Button>
-        </Link>
-        <Link href="/portfolio/choijh">
-          <Button variant="secondary" className="text-sm">
-            최준호
-          </Button>
-        </Link>
-        <Link href="/portfolio/kimhy">
-          <Button variant="secondary" className="text-sm">
-            김현영
-          </Button>
-        </Link>
+        김준엽 손민준 최준호 김현영
       </div>
 
       {/* 저작권 정보 */}

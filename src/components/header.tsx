@@ -22,18 +22,10 @@ export default function Header() {
   return (
     <header className="w-full h-20 flex items-center justify-between px-6 bg-yellow-50">
       {/* 좌측: 로고 + 제목 */}
-      <div className="flex items-center gap-4">
+      <Link className="flex items-center gap-4" href="/">
         <Image src="/logo.png" alt="로고" width={140} height={140} />
         <h1 className="text-xl font-bold text-yellow-700">후라이잉</h1>
-      </div>
-
-
-      {/* 기능 버튼들 */}
-      <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
-        <Button variant="outline" className="bg-white text-black text-sm">
-          미리보기
-        </Button>
-      </div>
+      </Link>
 
       {/* 우측: 인증 상태에 따른 동적 UI */}
       <div className="flex items-center gap-4">
@@ -42,6 +34,15 @@ export default function Header() {
             <span className="text-sm text-gray-700">
               안녕하세요, {user.name}님!
             </span>
+            <Link href="/question">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-gray-500 hover:text-black transition-colors"
+              >
+                작성
+              </Button>
+            </Link>
             <Button
               variant="outline"
               size="sm"
