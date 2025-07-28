@@ -64,7 +64,7 @@ export default async function result() {
                       // 3. 위에서 생성한 '서명된 URL(signedUrl)'을 src에 사용합니다.
                       src={item.signedUrl || item.content} // 만약 signedUrl이 없다면 원래 content를 사용합니다.
                       // 이미지를 제대로 확인하기 위해 크기를 조절했습니다.
-                      className="mt-2 w-auto h-auto max-w-full"
+                      className="mt-2 w-[300px] h-auto max-w-full"
                     />
                   </div>
                 ) : (
