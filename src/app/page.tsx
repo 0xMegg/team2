@@ -2,34 +2,33 @@
 
 import React, { useState } from "react";
 
-// import { supabase } from "../../utils/client";
-// import { useEffect } from "react";
-import MainPartComponent from "../components/main-part";
-import MainTitleComponent from "../components/main-title";
-import QuestionBoxComponent from "../components/question-box";
+import { supabase } from "../../utils/client";
+import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Home() {
-  // const getData = async () => {
-  //   const { data: test } = await supabase.from("test").select("*");
-  //   console.log(test);
-  // };
+  const getData = async () => {
+    const { data: test } = await supabase.from("test").select("*");
+    console.log("2", test);
+  };
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+  useEffect(() => {
+    getData();
+  }, []);
   const [questionBoxes, setQuestionBoxes] = useState([0]);
   const handleAddItem = () => {
     setQuestionBoxes((prevBoxes) => [...prevBoxes, prevBoxes.length]);
   };
 
   return (
-    <div>
-      <MainPartComponent onAddItem={handleAddItem}>
-        <MainTitleComponent />
-        {questionBoxes.map((_, index) => (
-          <QuestionBoxComponent key={index} />
-        ))}
-      </MainPartComponent>
+    <div className="flex items-center justify-center w-full  min-h-[calc(100vh-216px)] bg-[#ffd90066]">
+      <Link
+        className="flex 
+      "
+        href="/question"
+      >
+        설문
+      </Link>
     </div>
   );
 }
