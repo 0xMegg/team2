@@ -112,6 +112,25 @@ export default function SignUp() {
         },
       });
 
+      // 회원가입 후...
+      if (data.user) {
+        const userId = data.user.id; // 자동 생성된 uuid
+
+        // seats 테이블에 같은 uuid(fk)로 insert
+        const { error: seatError } = await supabase.from("seats").insert([
+          {
+            id: userId, // auth.users.id와 동일한 값을 fk로 사용!
+            seat: values.seat,
+            profileImage: profileImageUrl,
+          },
+        ]);
+        if (seatError) {
+          toast.error("seats 테이블에 좌석 정보 저장에 실패했습니다.");
+          console.log(seatError);
+          return;
+        }
+      }
+
       if (error) {
         // Supabase 에러 코드에 따른 구체적인 메시지 표시
         let errorMessage = "회원가입에 실패했습니다.";
