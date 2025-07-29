@@ -1,23 +1,46 @@
 import { Card } from "./ui/card";
 
-interface SeatsTableProps {
+interface SeatData {
+  id: number;
   seat: number;
-  onSeatChange: (seatNumber: number) => void;
+  profileImage?: string;
+  // 다른 필요한 필드들도 추가할 수 있습니다
 }
 
-export default function SeatsTable({ seat, onSeatChange }: SeatsTableProps) {
+interface SeatsTableProps {
+  seatsData?: SeatData[];
+  selectedSeat?: number;
+  onSeatChange?: (seatNumber: number) => void;
+}
+
+export default function SeatsTable({
+  seatsData = [],
+  selectedSeat,
+  onSeatChange,
+}: SeatsTableProps) {
   const rowNumbers = [0, 1, 2, 3, 4];
 
   const onClick = (seatNumber: number) => {
-    if (seat !== seatNumber) {
+    if (onSeatChange && selectedSeat !== seatNumber) {
       onSeatChange(seatNumber);
     }
   };
 
+  const getSeatData = (seatNumber: number) => {
+    return seatsData.find((seat) => seat.seat === seatNumber);
+  };
+
   const getCardStyle = (seatNumber: number) => {
-    return seat === seatNumber
-      ? "w-20 h-10 bg-yellow-300 hover:bg-yellow-400 text-white text-center"
-      : "w-20 h-10  hover:bg-yellow-200 text-center";
+    const seatData = getSeatData(seatNumber);
+    const isOccupied = seatData && seatData.profileImage;
+
+    if (selectedSeat === seatNumber) {
+      return "w-20 h-20 bg-yellow-300 hover:bg-yellow-400 text-white text-center flex flex-col items-center justify-center";
+    } else if (isOccupied) {
+      return "w-20 h-20 bg-green-200 text-center";
+    } else {
+      return "w-20 h-20 hover:bg-yellow-200 text-center flex flex-col items-center justify-center";
+    }
   };
 
   return (
@@ -29,13 +52,29 @@ export default function SeatsTable({ seat, onSeatChange }: SeatsTableProps) {
               className={getCardStyle(rowNumber * 6 + 1)}
               onClick={() => onClick(rowNumber * 6 + 1)}
             >
-              {rowNumber * 6 + 1}
+              {getSeatData(rowNumber * 6 + 1)?.profileImage ? (
+                <img
+                  src={getSeatData(rowNumber * 6 + 1)?.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-xs">{rowNumber * 6 + 1}</div>
+              )}
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 2)}
               onClick={() => onClick(rowNumber * 6 + 2)}
             >
-              {rowNumber * 6 + 2}
+              {getSeatData(rowNumber * 6 + 2)?.profileImage ? (
+                <img
+                  src={getSeatData(rowNumber * 6 + 2)?.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-xs">{rowNumber * 6 + 2}</div>
+              )}
             </Card>
           </div>
           <div className="flex">
@@ -43,13 +82,29 @@ export default function SeatsTable({ seat, onSeatChange }: SeatsTableProps) {
               className={getCardStyle(rowNumber * 6 + 3)}
               onClick={() => onClick(rowNumber * 6 + 3)}
             >
-              {rowNumber * 6 + 3}
+              {getSeatData(rowNumber * 6 + 3)?.profileImage ? (
+                <img
+                  src={getSeatData(rowNumber * 6 + 3)?.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-xs">{rowNumber * 6 + 3}</div>
+              )}
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 4)}
               onClick={() => onClick(rowNumber * 6 + 4)}
             >
-              {rowNumber * 6 + 4}
+              {getSeatData(rowNumber * 6 + 4)?.profileImage ? (
+                <img
+                  src={getSeatData(rowNumber * 6 + 4)?.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-xs">{rowNumber * 6 + 4}</div>
+              )}
             </Card>
           </div>
           <div className="flex">
@@ -57,13 +112,29 @@ export default function SeatsTable({ seat, onSeatChange }: SeatsTableProps) {
               className={getCardStyle(rowNumber * 6 + 5)}
               onClick={() => onClick(rowNumber * 6 + 5)}
             >
-              {rowNumber * 6 + 5}
+              {getSeatData(rowNumber * 6 + 5)?.profileImage ? (
+                <img
+                  src={getSeatData(rowNumber * 6 + 5)?.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-xs">{rowNumber * 6 + 5}</div>
+              )}
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 6)}
               onClick={() => onClick(rowNumber * 6 + 6)}
             >
-              {rowNumber * 6 + 6}
+              {getSeatData(rowNumber * 6 + 6)?.profileImage ? (
+                <img
+                  src={getSeatData(rowNumber * 6 + 6)?.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-xs">{rowNumber * 6 + 6}</div>
+              )}
             </Card>
           </div>
         </div>
