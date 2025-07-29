@@ -4,38 +4,47 @@ import React, { useState } from "react";
 
 import { supabase } from "../../utils/client";
 import { useEffect } from "react";
-import Link from "next/link";
+import MainPartComponent from "../components/main-part";
+import MainTitleComponent from "../components/main-title";
+import QuestionBoxComponent from "../components/question-box";
+import SeatsTable from "@/components/seatsTable";
+
+interface SeatData {
+  id: number;
+  seat: number;
+  profileImage?: string;
+  // 다른 필요한 필드들도 추가할 수 있습니다
+}
 
 export default function Home() {
-  const getData = async () => {
-    const { data: test } = await supabase.from("test").select("*");
-    console.log("2", test);
-  };
+  const [seatsData, setSeatsData] = useState<SeatData[]>([]);
+  const [selectedSeat, setSelectedSeat] = useState<number | undefined>();
+
+  async function readRows() {
+    const { data: seats, error } = await supabase.from("seats").select("*");
+    if (error) {
+      console.error("Error reading topics:", error);
+    } else {
+      console.log("seats:", seats);
+      setSeatsData(seats || []);
+    }
+  }
 
   useEffect(() => {
-    getData();
+    readRows();
   }, []);
-  const [questionBoxes, setQuestionBoxes] = useState([0]);
-  const handleAddItem = () => {
-    setQuestionBoxes((prevBoxes) => [...prevBoxes, prevBoxes.length]);
+
+  const handleSeatChange = (seatNumber: number) => {
+    setSelectedSeat(seatNumber);
   };
 
   return (
-    <div className="flex items-center justify-center w-full  min-h-[calc(100vh-216px)] bg-[#ffd90066] gap-5">
-      <Link
-        className="flex 
-      "
-        href="/question"
-      >
-        설문
-      </Link>
-      <Link
-        className="flex 
-      "
-        href="/result"
-      >
-        결과
-      </Link>
+    <div className="min-w-100 min-h-100 bg-[#ffd90066]">
+      <SeatsTable
+        seatsData={seatsData}
+        selectedSeat={selectedSeat}
+        onSeatChange={handleSeatChange}
+      />
     </div>
   );
 }
