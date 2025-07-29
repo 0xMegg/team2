@@ -2,39 +2,38 @@
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Trash2Icon, Copy, Image } from "lucide-react";
-import { useSurveyStore } from "@/store/surveyStore"; // Zustand import 추가
 
-export default function MainTitleComponent() {
+// ✅ props 타입 정의
+type Props = {
+  title: string;
+  onTitleChange: (val: string) => void;
+  titleContents: string;
+  onTitleContentsChange: (val: string) => void;
+};
+
+export default function MainTitleComponent({
+  title,
+  onTitleChange,
+  titleContents,
+  onTitleContentsChange,
+}: Props) {
   return (
-    <>
+    <div className="w-[768px] bg-white flex flex-col rounded-sm p-4 gap-4">
       {/* 설문 제목 */}
-      <div className="w-[768px]  bg-white flex flex-col rounded-sm">
-        {/* 설문제목 첫째줄 */}
-        <div className="flex w-full p-3">
-          <Input
-            placeholder="설문제목을 입력하세요"
-            className="p-6 w-full h-14"
-          />
-        </div>
-        {/* 설문제목 둘째줄 */}
-        <div className="flex w-full p-3">
-          <Textarea
-            placeholder="설문 세부 설명을 입력하세요"
-            className="p-6 w-full h-14"
-          />
-        </div>
-      </div>
-    </>
+      <Input
+        placeholder="설문 제목을 입력하세요"
+        className="w-full h-14 px-4"
+        value={title}
+        onChange={(e) => onTitleChange(e.target.value)}
+      />
+
+      {/* 설문 설명 */}
+      <Textarea
+        placeholder="설문 설명을 입력하세요"
+        className="w-full h-20 px-4"
+        value={titleContents}
+        onChange={(e) => onTitleContentsChange(e.target.value)}
+      />
+    </div>
   );
 }

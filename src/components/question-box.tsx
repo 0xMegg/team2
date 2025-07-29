@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -10,9 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Trash2Icon, Copy, Image } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 
 import ShortAnswerInput from "./question-types/ShortAnswerInput";
 import EssayAnswerTextarea from "./question-types/EssayAnswerTextarea";
@@ -22,23 +19,37 @@ import DropdownOptions from "./question-types/DropdownOptions";
 import FileUploadArea from "./question-types/FileUploadArea";
 import BlogAdress from "./question-types/BlogAdress";
 
-// 7. 이미지 URL 입력
-const ImageInputArea = () => {
-  const [images, setImages] = useState([{ id: Date.now(), url: "" }]);
+const ImageInputArea = ({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (newUrls: string[]) => void;
+}) => {
+  const [images, setImages] = useState(
+    value.length > 0
+      ? value.map((url) => ({ id: Date.now() + Math.random(), url }))
+      : [{ id: Date.now(), url: "" }]
+  );
 
   const addImage = () => {
-    setImages([...images, { id: Date.now(), url: "" }]);
+    const newImages = [...images, { id: Date.now(), url: "" }];
+    setImages(newImages);
+    onChange(newImages.map((img) => img.url));
   };
 
   const removeImage = (id: number) => {
-    if (images.length === 1) return alert("최소 1개는 남겨야 합니다.");
-    setImages(images.filter((img) => img.id !== id));
+    const newImages = images.filter((img) => img.id !== id);
+    setImages(newImages);
+    onChange(newImages.map((img) => img.url));
   };
 
   const handleChange = (id: number, value: string) => {
-    setImages(
-      images.map((img) => (img.id === id ? { ...img, url: value } : img))
+    const newImages = images.map((img) =>
+      img.id === id ? { ...img, url: value } : img
     );
+    setImages(newImages);
+    onChange(newImages.map((img) => img.url));
   };
 
   return (
@@ -51,12 +62,14 @@ const ImageInputArea = () => {
             onChange={(e) => handleChange(img.id, e.target.value)}
             type="url"
           />
-          <img
-            src={img.url}
-            alt={`img-${index}`}
-            className="w-16 h-16 object-cover rounded border"
-            onError={(e) => (e.currentTarget.src = "")}
-          />
+          {img.url && (
+            <img
+              src={img.url}
+              alt={`img-${index}`}
+              className="w-16 h-16 object-cover rounded border"
+              onError={(e) => (e.currentTarget.src = "/fallback.png")}
+            />
+          )}
           <Trash2Icon
             className="w-4 h-4 text-gray-400 cursor-pointer hover:text-red-500"
             onClick={() => removeImage(img.id)}
@@ -70,43 +83,100 @@ const ImageInputArea = () => {
   );
 };
 
-export default function QuestionBoxComponent() {
-  const [selectedQuestionType, setSelectedQuestionType] = useState("one");
+export default function QuestionBoxComponent({
+  index,
+  question,
+  onChange,
+}: {
+  index: number;
+  question: {
+    title: string;
+    type: string;
+    content: any;
+  };
+  onChange: (index: number, updated: Partial<typeof question>) => void;
+}) {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(index, { title: e.target.value });
+  };
 
-  // selectedQuestionType 값에 따라 다른 컴포넌트를 렌더링하는 함수
+  const handleTypeChange = (val: string) => {
+    onChange(index, { type: val, content: null });
+  };
+
+  const handleContentChange = (val: any) => {
+    onChange(index, { content: val });
+  };
+
   const renderQuestionSpecificContent = () => {
-    switch (selectedQuestionType) {
-      case "one": // 주관식
-        return <ShortAnswerInput />;
-      case "two": // 서술형
-        return <EssayAnswerTextarea />;
-      case "three": // 객관식
-        return <MultipleChoiceOptions />;
-      case "four": // 체크박스
-        return <CheckboxOptions />;
-      case "five": // 드롭박스
-        return <DropdownOptions />;
-      case "six": // 파일 업로드
-        return <FileUploadArea />;
-      case "seven": // 주소
-        return <BlogAdress />;
-      case "eight": // 이미지 URL 입력
-        return <ImageInputArea />;
+    switch (question.type) {
+      case "one":
+        return (
+          <ShortAnswerInput
+            value={question.content ?? ""}
+            onChange={handleContentChange}
+          />
+        );
+      case "two":
+        return (
+          <EssayAnswerTextarea
+            value={question.content ?? ""}
+            onChange={handleContentChange}
+          />
+        );
+      case "three":
+        return (
+          <MultipleChoiceOptions
+            value={question.content ?? ["", ""]}
+            onChange={handleContentChange}
+          />
+        );
+      case "four":
+        return (
+          <CheckboxOptions
+            value={
+              question.content ?? [
+                { label: "", checked: false },
+                { label: "", checked: false },
+              ]
+            }
+            onChange={handleContentChange}
+          />
+        );
+      case "five":
+        return (
+          <DropdownOptions
+            value={question.content ?? [{ label: "", checked: false }]}
+            onChange={handleContentChange}
+          />
+        );
+      case "six":
+        return <FileUploadArea />; // 업로드 기능은 추후 구현 시 상태 연동
+      case "seven":
+        return <BlogAdress />; // 주소 입력 컴포넌트도 필요시 상태 연동
+      case "eight":
+        return (
+          <ImageInputArea
+            value={question.content ?? []}
+            onChange={handleContentChange}
+          />
+        );
       default:
-        return null; // 기본적으로는 아무것도 렌더링하지 않습니다.
+        return null;
     }
   };
 
   return (
-    <div className="w-[768px] h-auto min-h-[136px] bg-white flex flex-col rounded-sm p-3 justify-center border">
-      {/* 질문 헤더 */}
-      <div className="w-full flex justify-center gap-3">
-        <Input placeholder="질문 제목" />
-        <Select
-          value={selectedQuestionType} // 현재 선택된 값 (상태)을 여기에 넣어줍니다.
-          onValueChange={setSelectedQuestionType} // 선택이 바뀔 때 이 함수를 호출하여 상태를 업데이트합니다.
-        >
-          <SelectTrigger className="w-[280px]">
+    <div className="w-[768px] bg-white flex flex-col gap-4 rounded-sm p-4 border">
+      <div className="flex gap-3 items-center">
+        <Input
+          placeholder="질문 제목"
+          value={question.title}
+          onChange={handleTitleChange}
+          className="flex-1"
+        />
+        <Select value={question.type} onValueChange={handleTypeChange}>
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="질문 유형" />
           </SelectTrigger>
           <SelectContent>
@@ -121,17 +191,11 @@ export default function QuestionBoxComponent() {
           </SelectContent>
         </Select>
       </div>
-      {/* 질문 내용 */}
-      <div className="w-full my-3">{renderQuestionSpecificContent()}</div>
-      {/* 질문 푸터 */}
-      <div className="w-full flex justify-end gap-3 px-5 my-1">
+      <div className="my-2">{renderQuestionSpecificContent()}</div>
+      <div className="flex justify-end items-center gap-5">
         <button>
-          <Trash2Icon className="w-4 h-4" />
+          <Trash2Icon className="w-4 h-4 text-gray-400 hover:text-red-500" />
         </button>
-        <div className="px-3 flex items-center space-x-2 border-l border-gray-300">
-          <Label htmlFor="required-switch">필수</Label>
-          <Switch id="required-switch" />
-        </div>
       </div>
     </div>
   );
