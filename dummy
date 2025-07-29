@@ -1,0 +1,22 @@
+-- 1. 트리거 함수 생성
+create or replace function public.handle_new_user_seats()
+returns trigger as $$
+declare
+  v_seat text;
+  v_profile_image text;
+begin
+  -- user_metadata에서 seat, profileImage 추출
+  v_seat := new.raw_user_meta_data ->> 'seat';
+  v_profile_image := new.raw_user_meta_data ->> 'profileImage';
+
+  insert into public.seats (id, seat, profileImage)
+  values (new.id, v_seat, v_profile_image);
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- 2. 트리거 생성 (auth.users에 새 row 삽입될 때 실행)
+create trigger on_auth_user_created_seats
+after insert on auth.users
+for each row execute function public.handle_new_user_seats();
