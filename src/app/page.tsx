@@ -18,7 +18,6 @@ interface SeatData {
 
 export default function Home() {
   const [seatsData, setSeatsData] = useState<SeatData[]>([]);
-  const [selectedSeat, setSelectedSeat] = useState<number | undefined>();
 
   async function readRows() {
     const { data: seats, error } = await supabase.from("seats").select("*");
@@ -34,17 +33,16 @@ export default function Home() {
     readRows();
   }, []);
 
-  const handleSeatChange = (seatNumber: number) => {
-    setSelectedSeat(seatNumber);
-  };
-
   return (
     <div className="min-w-100 min-h-100 bg-[#ffd90066]">
-      <SeatsTable
-        seatsData={seatsData}
-        selectedSeat={selectedSeat}
-        onSeatChange={handleSeatChange}
-      />
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4 text-center">좌석 현황</h1>
+        <SeatsTable
+          seatsData={seatsData}
+          selectedSeat={undefined}
+          onSeatChange={undefined}
+        />
+      </div>
     </div>
   );
 }
