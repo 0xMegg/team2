@@ -33,6 +33,7 @@ import {
 
 import { toast } from "sonner";
 import Link from "next/link";
+import EggBackground from "@/components/EggBackGround";
 
 const formSchema = z.object({
   email: z.email({
@@ -92,61 +93,8 @@ export default function SignIn() {
 
   return (
     <div className="flex flex-1 flex-col w-full min-h-[calc(100vh-216px)] items-center justify-center bg-[#ffd90066]">
+      <EggBackground />
       <Card className="relative w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <img
-            src="/favicon.png"
-            alt="계란1"
-            className="absolute top-4 left-4 w-8 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란2"
-            className="absolute top-16 right-8 w-10 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란3"
-            className="absolute bottom-12 left-10 w-12 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란4"
-            className="absolute bottom-4 right-6 w-9 opacity-20"
-          />
-
-          <img
-            src="/favicon.png"
-            alt="계란5"
-            className="absolute top-1/2 left-1 w-9 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란6"
-            className="absolute top-1/3 right-1/4 w-11 opacity-15"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란7"
-            className="absolute bottom-1/2 left-1/3 w-7 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란8"
-            className="absolute bottom-20 right-1/5 w-10 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란9"
-            className="absolute top-[70%] left-[45%] w-8 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란10"
-            className="absolute bottom-[30%] right-[35%] w-12 opacity-30"
-          />
-        </div>
-
         <div className="relative z-10">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-yellow-600">
