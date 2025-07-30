@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { useRouter } from "next/navigation";
 
 interface SeatData {
   id: number;
@@ -129,14 +130,25 @@ export default function SeatsTable({
   seatsData = [],
   selectedSeat,
 }: SeatsTableProps) {
+  const router = useRouter();
   const rowNumbers = [0, 1, 2, 3, 4];
 
   // 회원가입 페이지에서는 seat prop을 사용, 랜딩 페이지에서는 selectedSeat prop을 사용
   const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
 
   const onClick = (seatNumber: number) => {
+    // 회원가입 페이지에서 사용하는 경우
     if (onSeatChange && currentSelectedSeat !== seatNumber) {
       onSeatChange(seatNumber);
+    }
+
+    // 랜딩 페이지에서 사용하는 경우 - 사용자 데이터가 없는 좌석을 클릭하면 sign-up 페이지로 이동
+    if (!onSeatChange) {
+      const seatData = getSeatData(seatNumber);
+      if (!seatData || !seatData.profileImage) {
+        // 사용자 데이터가 없는 좌석을 클릭했을 때 sign-up 페이지로 이동
+        router.push(`/sign-up?seat=${seatNumber}`);
+      }
     }
   };
 
@@ -150,11 +162,10 @@ export default function SeatsTable({
     isRightCard: boolean = false
   ) => {
     const seatData = getSeatData(seatNumber);
-    const isOccupied = seatData && seatData.profileImage;
-    const isClickable = onSeatChange !== undefined;
 
-    let baseStyle =
-      "w-40 h-20 text-center flex flex-col items-center justify-center rounded-none";
+    // sign-up 페이지에서는 w-20, 랜딩 페이지에서는 w-40 사용
+    const cardWidth = onSeatChange !== undefined ? "w-20" : "w-40";
+    let baseStyle = `${cardWidth} h-20 text-center flex flex-col items-center justify-center rounded-none`;
 
     // radius 적용
     if (isLeftCard) {
@@ -165,12 +176,8 @@ export default function SeatsTable({
 
     if (currentSelectedSeat === seatNumber) {
       return `${baseStyle} bg-yellow-300 hover:bg-yellow-400 text-white`;
-    } else if (isOccupied) {
-      return `${baseStyle}`;
     } else {
-      return `${baseStyle} ${
-        isClickable ? "hover:bg-yellow-200 cursor-pointer" : "cursor-default"
-      }`;
+      return `${baseStyle} ${"hover:bg-yellow-200 cursor-pointer"}`;
     }
   };
 
@@ -181,9 +188,7 @@ export default function SeatsTable({
           <div className="flex">
             <Card
               className={getCardStyle(rowNumber * 6 + 1, true, false)}
-              onClick={
-                onSeatChange ? () => onClick(rowNumber * 6 + 1) : undefined
-              }
+              onClick={() => onClick(rowNumber * 6 + 1)}
             >
               {getSeatData(rowNumber * 6 + 1)?.profileImage ? (
                 <div className="w-full h-20 flex items-center justify-between">
@@ -205,9 +210,7 @@ export default function SeatsTable({
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 2, false, true)}
-              onClick={
-                onSeatChange ? () => onClick(rowNumber * 6 + 2) : undefined
-              }
+              onClick={() => onClick(rowNumber * 6 + 2)}
             >
               {getSeatData(rowNumber * 6 + 2)?.profileImage ? (
                 <div className="w-full h-20 flex items-center justify-between">
@@ -228,9 +231,7 @@ export default function SeatsTable({
           <div className="flex">
             <Card
               className={getCardStyle(rowNumber * 6 + 3, true, false)}
-              onClick={
-                onSeatChange ? () => onClick(rowNumber * 6 + 3) : undefined
-              }
+              onClick={() => onClick(rowNumber * 6 + 3)}
             >
               {getSeatData(rowNumber * 6 + 3)?.profileImage ? (
                 <img
@@ -244,9 +245,7 @@ export default function SeatsTable({
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 4, false, true)}
-              onClick={
-                onSeatChange ? () => onClick(rowNumber * 6 + 4) : undefined
-              }
+              onClick={() => onClick(rowNumber * 6 + 4)}
             >
               {getSeatData(rowNumber * 6 + 4)?.profileImage ? (
                 <img
@@ -262,9 +261,7 @@ export default function SeatsTable({
           <div className="flex">
             <Card
               className={getCardStyle(rowNumber * 6 + 5, true, false)}
-              onClick={
-                onSeatChange ? () => onClick(rowNumber * 6 + 5) : undefined
-              }
+              onClick={() => onClick(rowNumber * 6 + 5)}
             >
               {getSeatData(rowNumber * 6 + 5)?.profileImage ? (
                 <img
@@ -278,9 +275,7 @@ export default function SeatsTable({
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 6, false, true)}
-              onClick={
-                onSeatChange ? () => onClick(rowNumber * 6 + 6) : undefined
-              }
+              onClick={() => onClick(rowNumber * 6 + 6)}
             >
               {getSeatData(rowNumber * 6 + 6)?.profileImage ? (
                 <img

@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -52,7 +52,12 @@ const formSchema = z
 
 export default function SignUp() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [thumbnail, setThumbnail] = useState<string | File | null>(null); // 썸네일은 파일 업로드를 통해 설정할 수 있습니다. 임시 저장 같은 경우에는 null일 수 있습니다.
+
+  // URL에서 좌석 정보 가져오기
+  const seatFromUrl = searchParams.get("seat");
+  const initialSeat = seatFromUrl ? parseInt(seatFromUrl) : 0;
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,9 +69,16 @@ export default function SignUp() {
       confirmPassword: "",
       terms: false,
       profileImage: "",
-      seat: 0,
+      seat: initialSeat,
     },
   });
+
+  // URL에서 좌석 정보가 변경되면 폼 업데이트
+  useEffect(() => {
+    if (seatFromUrl) {
+      form.setValue("seat", parseInt(seatFromUrl));
+    }
+  }, [seatFromUrl, form]);
 
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
