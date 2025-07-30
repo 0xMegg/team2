@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { useRouter } from "next/navigation";
+import { getRandomSeatTitle } from "@/lib/constants";
 
 interface SeatData {
   id: number;
@@ -20,110 +20,6 @@ interface SeatsTableProps {
   seatsData?: SeatData[];
   selectedSeat?: number;
 }
-
-export const titles: string[] = [
-  "코드초심자",
-  "개발기린이",
-  "알고첫걸음",
-  "버그탐험가",
-  "함수탐색자",
-  "자바입문자",
-  "파이썬초보",
-  "클래스유망주",
-  "변수탐구자",
-  "자료열정가",
-  "객체연구생",
-  "프로젝토끼",
-  "스택연습생",
-  "큐초석자리",
-  "반복먼길이",
-  "네트속초보",
-  "깃첫커밋",
-  "배열새싹이",
-  "습득프로토",
-  "웹초보연금",
-  "피드백바다",
-  "디버그유령",
-  "로직씨앗",
-  "화면설계자",
-  "알고밭지기",
-  "소스승급생",
-  "자료도전자",
-  "신입코더즈",
-  "프론트마린",
-  "백엔드수련",
-  "기능준비생",
-  "모듈찾기면",
-  "꿈꾸는포인터",
-  "스크립트손",
-  "인터페이서",
-  "새벽해커스",
-  "뉴코드몽키",
-  "퀘스트헌터",
-  "유닛신입생",
-  "기초블록스",
-  "성장노드들",
-  "연습코더링",
-  "오류발굴단",
-  "정렬타자기",
-  "코드조각사",
-  "패턴탐험대",
-  "루프법사들",
-  "로딩세대원",
-  "학원신입들",
-  "실습응시생",
-  "Code Novice",
-  "Dev Beginner",
-  "Algo Starter",
-  "Bug Explorer",
-  "Function Seeker",
-  "Java Learner",
-  "Python Rookie",
-  "Class Hopeful",
-  "Variable Finder",
-  "Data Enthusiast",
-  "Object Trainee",
-  "Project Rabbit",
-  "Stack Trainee",
-  "Queue Starter",
-  "Loop Walker",
-  "Net Beginner",
-  "First Commit",
-  "Array Sprout",
-  "Proto Learner",
-  "Web Newbie",
-  "Feedback Diver",
-  "Debug Ghost",
-  "Logic Seed",
-  "UI Planner",
-  "Algo Keeper",
-  "Source Upgrader",
-  "Data Challenger",
-  "Rookie Coders",
-  "Frontline Coder",
-  "Backend Intern",
-  "Feature Novice",
-  "Module Hunter",
-  "Dreaming Pointer",
-  "Script Hand",
-  "Interfacer",
-  "Dawn Hackers",
-  "New Codemonkey",
-  "Quest Hunter",
-  "Unit Intern",
-  "Basic Blocks",
-  "Growing Nodes",
-  "Practicoder",
-  "Bug Squad",
-  "Sorting Typer",
-  "Code Sculptor",
-  "Pattern Scout",
-  "Loop Wizard",
-  "Loading Member",
-  "Academy Newbie",
-  "Lab Attender",
-];
-
 export default function SeatsTable({
   seat,
   onSeatChange,
@@ -137,17 +33,28 @@ export default function SeatsTable({
   const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
 
   const onClick = (seatNumber: number) => {
+    // 이미 가입된 좌석인지 확인
+    const seatData = getSeatData(seatNumber);
+
+    // 회원가입 페이지에서만 이미 가입된 좌석 선택 불가
+    if (onSeatChange && seatData && seatData.profileImage) {
+      // 이미 가입된 좌석은 선택 불가
+      return;
+    }
+
     // 회원가입 페이지에서 사용하는 경우
     if (onSeatChange && currentSelectedSeat !== seatNumber) {
       onSeatChange(seatNumber);
     }
 
-    // 랜딩 페이지에서 사용하는 경우 - 사용자 데이터가 없는 좌석을 클릭하면 sign-up 페이지로 이동
+    // 랜딩 페이지에서 사용하는 경우
     if (!onSeatChange) {
-      const seatData = getSeatData(seatNumber);
       if (!seatData || !seatData.profileImage) {
         // 사용자 데이터가 없는 좌석을 클릭했을 때 sign-up 페이지로 이동
         router.push(`/sign-up?seat=${seatNumber}`);
+      } else {
+        // 사용자 데이터가 있는 좌석을 클릭했을 때 result 페이지로 이동
+        router.push(`/result/${seatNumber}`);
       }
     }
   };
@@ -174,6 +81,11 @@ export default function SeatsTable({
       baseStyle += " rounded-r-lg";
     }
 
+    // 이미 가입된 좌석인 경우 (회원가입 페이지에서만 회색 배경 적용)
+    if (seatData && seatData.profileImage && onSeatChange) {
+      return `${baseStyle} bg-gray-300 cursor-not-allowed`;
+    }
+
     if (currentSelectedSeat === seatNumber) {
       return `${baseStyle} bg-yellow-300 hover:bg-yellow-400 text-white`;
     } else {
@@ -191,19 +103,33 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 1)}
             >
               {getSeatData(rowNumber * 6 + 1)?.profileImage ? (
-                <div className="w-full h-20 flex items-center justify-between">
-                  <img
-                    src={getSeatData(rowNumber * 6 + 1)?.profileImage}
-                    alt="Profile"
-                    className="w-16 h-16 rounded-full ml-2"
-                  />
-                  <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                    <p>{getSeatData(rowNumber * 6 + 1)?.userName}</p>
-                    <Button variant="outline" className="w-18 h-8">
-                      프로필 작성
-                    </Button>
+                onSeatChange ? (
+                  // 회원가입 페이지: profileImage만 표시
+                  <div className="w-full h-20 flex items-center justify-center">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 1)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full"
+                      width={64}
+                      height={64}
+                    />
                   </div>
-                </div>
+                ) : (
+                  // 랜딩 페이지: username과 title 표시
+                  <div className="w-full h-20 flex items-center justify-between">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 1)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full ml-2"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="w-full flex flex-col items-end justify-center gap- mr-2">
+                      <p>{getSeatData(rowNumber * 6 + 1)?.userName}</p>
+                      <p>{getRandomSeatTitle()}</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-xs">{rowNumber * 6 + 1}</div>
               )}
@@ -213,16 +139,33 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 2)}
             >
               {getSeatData(rowNumber * 6 + 2)?.profileImage ? (
-                <div className="w-full h-20 flex items-center justify-between">
-                  <img
-                    src={getSeatData(rowNumber * 6 + 2)?.profileImage}
-                    alt="Profile"
-                    className="w-16 h-16 rounded-full ml-2"
-                  />
-                  <div className="w-full flex flex-col items-end justify-center gap-1 mr-2">
-                    <p>{getSeatData(rowNumber * 6 + 2)?.userName}</p>
+                onSeatChange ? (
+                  // 회원가입 페이지: profileImage만 표시
+                  <div className="w-full h-20 flex items-center justify-center">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 2)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full"
+                      width={64}
+                      height={64}
+                    />
                   </div>
-                </div>
+                ) : (
+                  // 랜딩 페이지: username과 title 표시
+                  <div className="w-full h-20 flex items-center justify-between">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 2)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full ml-2"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="w-full flex flex-col items-end justify-center gap- mr-2">
+                      <p>{getSeatData(rowNumber * 6 + 2)?.userName}</p>
+                      <p>{getRandomSeatTitle()}</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-xs">{rowNumber * 6 + 2}</div>
               )}
@@ -234,11 +177,33 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 3)}
             >
               {getSeatData(rowNumber * 6 + 3)?.profileImage ? (
-                <img
-                  src={getSeatData(rowNumber * 6 + 4)?.profileImage}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+                onSeatChange ? (
+                  // 회원가입 페이지: profileImage만 표시
+                  <div className="w-full h-20 flex items-center justify-center">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 3)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full"
+                      width={64}
+                      height={64}
+                    />
+                  </div>
+                ) : (
+                  // 랜딩 페이지: username과 title 표시
+                  <div className="w-full h-20 flex items-center justify-between">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 3)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full ml-2"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="w-full flex flex-col items-end justify-center gap- mr-2">
+                      <p>{getSeatData(rowNumber * 6 + 3)?.userName}</p>
+                      <p>{getRandomSeatTitle()}</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-xs">{rowNumber * 6 + 3}</div>
               )}
@@ -248,11 +213,33 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 4)}
             >
               {getSeatData(rowNumber * 6 + 4)?.profileImage ? (
-                <img
-                  src={getSeatData(rowNumber * 6 + 4)?.profileImage}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+                onSeatChange ? (
+                  // 회원가입 페이지: profileImage만 표시
+                  <div className="w-full h-20 flex items-center justify-center">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 4)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full"
+                      width={64}
+                      height={64}
+                    />
+                  </div>
+                ) : (
+                  // 랜딩 페이지: username과 title 표시
+                  <div className="w-full h-20 flex items-center justify-between">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 4)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full ml-2"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="w-full flex flex-col items-end justify-center gap- mr-2">
+                      <p>{getSeatData(rowNumber * 6 + 4)?.userName}</p>
+                      <p>{getRandomSeatTitle()}</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-xs">{rowNumber * 6 + 4}</div>
               )}
@@ -264,11 +251,33 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 5)}
             >
               {getSeatData(rowNumber * 6 + 5)?.profileImage ? (
-                <img
-                  src={getSeatData(rowNumber * 6 + 5)?.profileImage}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+                onSeatChange ? (
+                  // 회원가입 페이지: profileImage만 표시
+                  <div className="w-full h-20 flex items-center justify-center">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 5)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full"
+                      width={64}
+                      height={64}
+                    />
+                  </div>
+                ) : (
+                  // 랜딩 페이지: username과 title 표시
+                  <div className="w-full h-20 flex items-center justify-between">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 5)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full ml-2"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="w-full flex flex-col items-end justify-center gap- mr-2">
+                      <p>{getSeatData(rowNumber * 6 + 5)?.userName}</p>
+                      <p>{getRandomSeatTitle()}</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-xs">{rowNumber * 6 + 5}</div>
               )}
@@ -278,11 +287,33 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 6)}
             >
               {getSeatData(rowNumber * 6 + 6)?.profileImage ? (
-                <img
-                  src={getSeatData(rowNumber * 6 + 6)?.profileImage}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+                onSeatChange ? (
+                  // 회원가입 페이지: profileImage만 표시
+                  <div className="w-full h-20 flex items-center justify-center">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 6)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full"
+                      width={64}
+                      height={64}
+                    />
+                  </div>
+                ) : (
+                  // 랜딩 페이지: username과 title 표시
+                  <div className="w-full h-20 flex items-center justify-between">
+                    <Image
+                      src={getSeatData(rowNumber * 6 + 6)?.profileImage || ""}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full ml-2"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="w-full flex flex-col items-end justify-center gap- mr-2">
+                      <p>{getSeatData(rowNumber * 6 + 6)?.userName}</p>
+                      <p>{getRandomSeatTitle()}</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="text-xs">{rowNumber * 6 + 6}</div>
               )}
