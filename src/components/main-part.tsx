@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/stores/auth";
+
 type MainPartComponentProps = {
   children: React.ReactNode;
   onAddItem: () => void;
@@ -9,8 +11,14 @@ export default function MainPartComponent({
   onAddItem,
   onSubmit,
 }: MainPartComponentProps) {
+  const user = useAuthStore((state) => state.user);
   return (
     <div className="flex flex-1 flex-col w-full min-h-[calc(100vh-216px)] items-center bg-[#ffd90066] p-10 gap-5 overflow-auto">
+      {user && (
+        <div className="w-[768px] text-right text-gray-700 text-sm mb-2">
+          <span className="font-semibold">{user.name}</span>님의 자기소개 폼!💪🏿
+        </div>
+      )}
       {children}
       <div className="w-[768px] flex justify-between">
         <button
