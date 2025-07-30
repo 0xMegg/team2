@@ -1,38 +1,94 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainPartComponent from "../../components/main-part";
 import MainTitleComponent from "../../components/main-title";
 import QuestionBoxComponent from "../../components/question-box";
 import { supabase } from "@/utils/client";
+import { useRouter } from "next/navigation";
 
 type Question = {
   id: number;
   title: string;
   type: string;
-  content: any; // ✅ 추가됨
+  content: any;
   required: boolean;
 };
 
-// type 문자열 → uuid로 매핑
+// type 라벨 → uuid
 const typeLabelToUUID: Record<string, string> = {
-  one: "uuid-for-one", // 주관식
-  two: "uuid-for-two", // 서술형
-  three: "uuid-for-three", // 객관식
-  four: "uuid-for-four", // 체크박스
-  five: "uuid-for-five", // 드롭다운
-  six: "uuid-for-six", // 파일업로드
-  seven: "uuid-for-seven", // 블로그 주소
-  eight: "uuid-for-eight", // 이미지
+  one: "uuid-for-one",
+  two: "uuid-for-two",
+  three: "uuid-for-three",
+  four: "uuid-for-four",
+  five: "uuid-for-five",
+  six: "uuid-for-six",
+  seven: "uuid-for-seven",
+  eight: "uuid-for-eight",
+};
+
+// uuid → type 라벨 (역변환)
+const uuidToLabel: Record<string, string> = {
+  "uuid-for-one": "one",
+  "uuid-for-two": "two",
+  "uuid-for-three": "three",
+  "uuid-for-four": "four",
+  "uuid-for-five": "five",
+  "uuid-for-six": "six",
+  "uuid-for-seven": "seven",
+  "uuid-for-eight": "eight",
 };
 
 export default function Home() {
+  const router = useRouter();
+
+  const [mode, setMode] = useState<"create" | "edit" | null>(null);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
   const [mainTitle, setMainTitle] = useState("");
   const [mainDesc, setMainDesc] = useState("");
-
   const [questions, setQuestions] = useState<Question[]>([
     { id: 0, title: "", type: "one", required: false, content: null },
   ]);
+
+  useEffect(() => {
+    const checkSurvey = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/sign-in");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("survey")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (data) {
+        setMode("edit");
+        setSurveyId(data.id);
+        setMainTitle(data.title);
+        setMainDesc(data.title_contents);
+
+        // 🔁 질문 type을 uuid → 라벨로 변환
+        const converted = data.questions.map((q: any, i: number) => ({
+          id: i,
+          title: q.title,
+          content: q.content,
+          type: uuidToLabel[q.type] ?? "one", // 핵심 변환!
+          required: q.required ?? false,
+        }));
+
+        setQuestions(converted);
+      } else {
+        setMode("create");
+      }
+    };
+
+    checkSurvey();
+  }, []);
 
   const handleAddItem = () => {
     setQuestions((prev) => [
@@ -48,37 +104,67 @@ export default function Home() {
   };
 
   const updateQuestion = (index: number, updated: Partial<Question>) => {
-    console.log("🔧 질문 업데이트됨:", index, updated); // 디버깅용
     setQuestions((prev) =>
       prev.map((q, i) => (i === index ? { ...q, ...updated } : q))
     );
   };
 
   const handleSubmit = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     const questionData = questions.map((q) => ({
       title: q.title,
-      type: typeLabelToUUID[q.type],
-      content: q.content, // ✅ 반드시 이 부분에서 값이 있어야 함
+      type: typeLabelToUUID[q.type], // 라벨 → uuid 변환
+      content: q.content,
     }));
 
-    console.log("🧾 저장 전 질문 데이터:", questionData); // 이걸 꼭 확인!
+    if (mode === "create") {
+      const { error } = await supabase.from("survey").insert([
+        {
+          title: mainTitle,
+          title_contents: mainDesc,
+          questions: questionData,
+          user_id: user.id,
+          bool: true,
+        },
+      ]);
 
-    const { data, error } = await supabase.from("survey").insert([
-      {
-        title: mainTitle,
-        title_contents: mainDesc,
-        questions: questionData,
-      },
-    ]);
+      if (error) {
+        console.error("❌ 저장 실패:", error.message);
+        alert("저장 실패");
+      } else {
+        alert("성공적으로 저장되었습니다!");
+        router.push("/result");
+      }
+    }
 
-    if (error) {
-      console.error("❌ 저장 실패:", error.message);
-      alert("저장 실패");
-    } else {
-      alert("성공적으로 저장되었습니다!");
-      console.log("✅ 저장된 데이터:", data);
+    if (mode === "edit" && surveyId) {
+      const { error } = await supabase
+        .from("survey")
+        .update({
+          title: mainTitle,
+          title_contents: mainDesc,
+          questions: questionData,
+        })
+        .eq("id", surveyId);
+
+      if (error) {
+        console.error("❌ 수정 실패:", error.message);
+        alert("수정 실패");
+      } else {
+        alert("성공적으로 수정되었습니다!");
+        router.push("/result");
+      }
     }
   };
+
+  if (mode === null) return <div>로딩 중...</div>;
 
   return (
     <div>
