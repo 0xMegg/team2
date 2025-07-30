@@ -1,42 +1,72 @@
 export default function EggBackground() {
-  const rows = 6; // 세로 줄 수
-  const cols = 6; // 가로 줄 수
-  const gap = 100 / Math.max(rows, cols); // 각 칸 크기
-  const total = rows * cols;
+  const total = 10; // 총 이미지 개수
+  const positions: Array<{ top: number; left: number }> = [];
+
+  // 겹치지 않도록 위치를 생성하는 함수
+  const generatePosition = (): { top: number; left: number } => {
+    let attempts = 0;
+    const maxAttempts = 100;
+
+    while (attempts < maxAttempts) {
+      const top = Math.random() * 100; // 0% ~ 100% 범위로 확장
+      const left = Math.random() * 100; // 0% ~ 100% 범위로 확장
+
+      // 기존 위치들과의 거리 확인
+      const minDistance = 15; // 최소 거리
+      let isValid = true;
+
+      for (const pos of positions) {
+        const distance = Math.sqrt(
+          Math.pow(top - pos.top, 2) + Math.pow(left - pos.left, 2)
+        );
+        if (distance < minDistance) {
+          isValid = false;
+          break;
+        }
+      }
+
+      if (isValid) {
+        return { top, left };
+      }
+
+      attempts++;
+    }
+
+    // 최대 시도 횟수를 초과하면 랜덤 위치 반환
+    return {
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+    };
+  };
+
+  // 위치 배열 생성
+  for (let i = 0; i < total; i++) {
+    positions.push(generatePosition());
+  }
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-0">
-      {Array.from({ length: total }).map((_, index) => {
-        const row = Math.floor(index / cols);
-        const col = index % cols;
-        const top = row * gap + Math.random() * (gap / 2);
-        const left = col * gap + Math.random() * (gap / 2);
+    <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      {positions.map((pos, index) => {
+        const random = Math.random(); // 한 번만 랜덤 값 생성
+        const size = random < 0.5 ? 8 : 12;
+        const rotation = random * 360;
+        const blur = random * 0.5;
 
         return (
           <img
             key={index}
             src="/favicon.png"
             alt={`계란${index}`}
-            className={`absolute w-${getSize(index)} opacity-${getOpacity(
-              index
-            )}`}
+            className={`absolute w-${size} opacity-[.25] transition-all duration-1000 ease-in-out`}
             style={{
-              top: `${top}%`,
-              left: `${left}%`,
+              top: `${pos.top}%`,
+              left: `${pos.left}%`,
+              transform: `rotate(${rotation}deg)`,
+              filter: `blur(${blur}px)`,
             }}
           />
         );
       })}
     </div>
   );
-}
-
-function getSize(index: number) {
-  const sizes = [6, 8, 10, 12];
-  return sizes[index % sizes.length];
-}
-
-function getOpacity(index: number) {
-  const opacities = [10, 20, 25, 30];
-  return opacities[index % opacities.length];
 }

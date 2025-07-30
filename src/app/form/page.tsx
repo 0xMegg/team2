@@ -1,6 +1,6 @@
 "use client";
 
-import EggBackground from "@/components/EggBackGround";
+import EggBackground from "@/components/eggBackGround";
 import MainPartComponent from "@/components/main-part";
 import MainTitleComponent from "@/components/main-title";
 import QuestionBoxComponent from "@/components/question-box";

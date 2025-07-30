@@ -1,6 +1,6 @@
 "use client";
 
-import EggBackground from "@/components/EggBackGround";
+import EggBackground from "@/components/eggBackGround";
 import SeatsTable from "@/components/seatsTable";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,6 @@ import { useEffect } from "react";
 import MainPartComponent from "../components/main-part";
 import MainTitleComponent from "../components/main-title";
 import QuestionBoxComponent from "../components/question-box";
-import SeatsTable from "@/components/seatsTable";
 
 interface SeatData {
   id: number;
