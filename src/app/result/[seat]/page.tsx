@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/utils/client";
+import { useParams } from "next/navigation";
 
 // survey 배열에 들어갈 객체 하나의 타입을 정의합니다.
 interface SurveyItem {
@@ -9,7 +10,7 @@ interface SurveyItem {
   created_at: string;
   title: string;
   title_contents: string;
-  uuid: string;
+  author: string;
   questions: any[];
 }
 
@@ -18,6 +19,8 @@ export default function ResultPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const params = useParams();
+  const seat = params.seat as string;
 
   useEffect(() => {
     const checkUserAndFetchData = async () => {
@@ -32,25 +35,54 @@ export default function ResultPage() {
 
       // 확인용 콘솔 로그
       console.log("컴포넌트에서 직접 확인한 userId:", currentUserId);
+      console.log("현재 seat 값:", seat);
 
-      // 설문 데이터를 가져옵니다.
-      const { data: surveyData, error: surveyError } = await supabase
-        .from("survey")
-        .select("*")
-        .order("id", { ascending: true });
+      try {
+        // 1. seats 테이블에서 해당 seat의 author 값을 가져옵니다.
+        const { data: seatData, error: seatError } = await supabase
+          .from("seats")
+          .select("author")
+          .eq("seat", seat)
+          .single();
 
-      if (surveyError) {
+        if (seatError) {
+          setError("해당 좌석 정보를 찾을 수 없습니다.");
+          console.error(seatError);
+          setLoading(false);
+          return;
+        }
+
+        if (!seatData || !seatData.author) {
+          setError("해당 좌석의 작성자 정보를 찾을 수 없습니다.");
+          setLoading(false);
+          return;
+        }
+
+        console.log("찾은 author:", seatData.author);
+
+        // 2. survey 테이블에서 해당 author와 같은 author를 가진 데이터를 가져옵니다.
+        const { data: surveyData, error: surveyError } = await supabase
+          .from("survey")
+          .select("*")
+          .eq("author", seatData.author)
+          .order("id", { ascending: true });
+
+        if (surveyError) {
+          setError("데이터를 불러오는 중 오류가 발생했습니다.");
+          console.error(surveyError);
+        } else {
+          setSurvey(surveyData as SurveyItem[]);
+        }
+      } catch (error) {
         setError("데이터를 불러오는 중 오류가 발생했습니다.");
-        console.error(surveyError);
-      } else {
-        setSurvey(surveyData as SurveyItem[]);
+        console.error(error);
       }
 
       setLoading(false);
     };
 
     checkUserAndFetchData();
-  }, []);
+  }, [seat]);
 
   // 질문 유형에 따라 content를 렌더링하는 헬퍼 함수
   const renderQuestionContent = (question: any) => {
