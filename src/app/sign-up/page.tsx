@@ -156,7 +156,6 @@ export default function SignUp() {
       }
 
       if (data.user) {
-        console.log(data);
         toast.success("회원가입이 완료되었습니다! 이메일을 확인해주세요. 📧");
         router.push("/sign-in");
       }
