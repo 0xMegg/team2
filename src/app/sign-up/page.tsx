@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -23,31 +24,37 @@ import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
 import EggBackground from "@/components/EggBackGround";
 
-const formSchema = z.object({
-  email: z.email({
-    message: "Invalid email address.",
-  }),
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  password: z.string().min(2, {
-    message: "Password must be at least 2 characters.",
-  }),
-  confirmPassword: z.string().min(2, {
-    message: "Password must be at least 2 characters.",
-  }),
-  terms: z.boolean().refine((val) => val, {
-    message: "You must accept the terms and conditions.",
-  }),
-  profileImage: z.any().refine((val) => val, {
-    message: "You must select a profile image.",
-  }),
-  seat: z.number().refine((val) => val, {
-    message: "You must select a seat.",
-  }),
-});
+const formSchema = z
+  .object({
+    email: z.string().email({
+      message: "유효한 이메일 주소를 입력해주세요.",
+    }),
+    username: z.string().min(2, {
+      message: "사용자명은 최소 2자 이상이어야 합니다.",
+    }),
+    password: z.string().min(6, {
+      message: "비밀번호는 최소 6자 이상이어야 합니다.",
+    }),
+    confirmPassword: z.string().min(6, {
+      message: "비밀번호는 최소 6자 이상이어야 합니다.",
+    }),
+    terms: z.boolean().refine((val) => val, {
+      message: "이용약관에 동의해야 합니다.",
+    }),
+    profileImage: z.any().optional(),
+    seat: z.number().refine((val) => val > 0, {
+      message: "좌석을 선택해주세요.",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "비밀번호가 일치하지 않습니다.",
+    path: ["confirmPassword"],
+  });
 
 export default function SignUp() {
+  const router = useRouter();
+  const [thumbnail, setThumbnail] = useState<string | File | null>(null); // 썸네일은 파일 업로드를 통해 설정할 수 있습니다. 임시 저장 같은 경우에는 null일 수 있습니다.
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,7 +63,7 @@ export default function SignUp() {
       username: "",
       password: "",
       confirmPassword: "",
-      terms: true,
+      terms: false,
       profileImage: "",
       seat: 0,
     },
@@ -65,6 +72,34 @@ export default function SignUp() {
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // 임시 유저 ID 생성 (실제 회원가입 후 얻을 수 있음)
+      const tempUserId = `temp_${Date.now()}`;
+      let profileImageUrl = "";
+
+      // 이미지가 있다면 먼저 업로드
+      if (values.profileImage instanceof File) {
+        const fileExt = values.profileImage.name.split(".").pop();
+        const filePath = `profile-images/${tempUserId}/${Date.now()}.${fileExt}`;
+
+        const { data: imageData, error: imageError } = await supabase.storage
+          .from("files")
+          .upload(filePath, values.profileImage, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+        if (imageError) {
+          toast.error("파일 업로드에 실패했습니다.");
+          return;
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("files").getPublicUrl(filePath);
+        profileImageUrl = publicUrl;
+      }
+
+      // 회원가입 처리 (이미지 URL 포함)
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -72,23 +107,63 @@ export default function SignUp() {
           data: {
             username: values.username,
             terms: values.terms,
-            profileImage: values.profileImage,
             seat: values.seat,
+            profileImage: profileImageUrl,
           },
         },
       });
 
-      if (data) {
-        console.log(data);
-        toast.success("Sign up successful");
+      // 회원가입 후...
+      if (data.user) {
+        const userId = data.user.id; // 자동 생성된 uuid
+
+        // seats 테이블에 같은 uuid(fk)로 insert
+        const { error: seatError } = await supabase.from("seats").insert([
+          {
+            id: userId, // auth.users.id와 동일한 값을 fk로 사용!
+            seat: values.seat,
+            profileImage: profileImageUrl,
+            username: values.username,
+          },
+        ]);
+        if (seatError) {
+          toast.error("seats 테이블에 좌석 정보 저장에 실패했습니다.");
+          console.log(seatError);
+          return;
+        }
       }
 
       if (error) {
-        toast.error("Sign up failed");
-        throw error;
+        // Supabase 에러 코드에 따른 구체적인 메시지 표시
+        let errorMessage = "회원가입에 실패했습니다.";
+
+        switch (error.message) {
+          case "User already registered":
+            errorMessage = "이미 가입된 이메일입니다.";
+            break;
+          case "Invalid email":
+            errorMessage = "유효하지 않은 이메일 형식입니다.";
+            break;
+          case "Unable to validate email address: invalid format":
+            errorMessage = "이메일 형식이 올바르지 않습니다.";
+            break;
+          default:
+            errorMessage = `회원가입 오류: ${error.message}`;
+        }
+
+        toast.error(errorMessage);
+        console.error("회원가입 에러:", error);
+        return;
+      }
+
+      if (data.user) {
+        console.log(data);
+        toast.success("회원가입이 완료되었습니다! 이메일을 확인해주세요. 📧");
+        router.push("/sign-in");
       }
     } catch (error) {
-      console.error("catch error", error);
+      console.error("회원가입 중 예상치 못한 오류:", error);
+      toast.error("회원가입 중 예상치 못한 오류가 발생했습니다.");
     }
   };
 
@@ -102,16 +177,30 @@ export default function SignUp() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow flex flex-col md:flex-row gap-6"
         >
-          {/* 아이디 입력 */}
+          {/* 이메일 입력 */}
           <div className="w-80 md:w-1/2 space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>이메일</FormLabel>
+                  <FormControl>
+                    <Input placeholder="이메일을 입력해주세요" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* 사용자명 입력 */}
             <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>사용자</FormLabel>
+                  <FormLabel>사용자명</FormLabel>
                   <FormControl>
-                    <Input placeholder="아이디를 입력해주세요" {...field} />
+                    <Input placeholder="사용자명을 입력해주세요" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -188,15 +277,16 @@ export default function SignUp() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          field.onChange(file.name);
+                          field.onChange(file); // 파일 객체 자체를 저장
                           const url = URL.createObjectURL(file); // 미리보기용 URL 생성
                           setPreviewUrl(url); // 상태 저장
+                          setThumbnail(file);
                         }
                       }}
                     />
                   </FormControl>
                   <FormDescription>
-                    (선택)이미지를 업로드해주세요
+                    프로필 이미지를 업로드해주세요
                   </FormDescription>
                   <FormMessage />
                   {/* ✅ 미리보기 박스 추가 */}

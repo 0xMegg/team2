@@ -6,55 +6,48 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function HomePage() {
-  const router = useRouter();
-  const [selectedSeat, setSelectedSeat] = useState<number | null>(null);
+import { supabase } from "../../utils/client";
+import { useEffect } from "react";
+import MainPartComponent from "../components/main-part";
+import MainTitleComponent from "../components/main-title";
+import QuestionBoxComponent from "../components/question-box";
+import SeatsTable from "@/components/seatsTable";
 
-  const handleStart = () => {
-    if (selectedSeat === null) {
-      alert("좌석을 먼저 선택해주세요!");
-      return;
+interface SeatData {
+  id: number;
+  seat: number;
+  profileImage?: string;
+  userName: string;
+  // 다른 필요한 필드들도 추가할 수 있습니다
+}
+
+export default function Home() {
+  const [seatsData, setSeatsData] = useState<SeatData[]>([]);
+
+  async function readRows() {
+    const { data: seats, error } = await supabase.from("seats").select("*");
+    if (error) {
+      console.error("Error reading topics:", error);
+    } else {
+      console.log("seats:", seats);
+      setSeatsData(seats || []);
     }
+  }
 
-    // 나중에 여기서 /form?seat=2 이런 식으로 넘겨도 됨
-    router.push("/form");
-  };
+  useEffect(() => {
+    readRows();
+  }, []);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-[#ffd90066] p-10 gap-10">
-      <EggBackground />
-      {/* 👋 환영 메시지 */}
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">환영합니다</h1>
-
-        <button
-          onClick={handleStart}
-          className="bg-amber-400 text-white px-6 py-3 rounded-xl shadow hover:bg-amber-500 transition"
-        >
-          설문 시작하기
-        </button>
+    <div className="min-w-100 min-h-100 bg-[#ffd90066]">
+      <div className="p-4 flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold mb-4 text-center">좌석 현황</h1>
+        <SeatsTable
+          seatsData={seatsData}
+          selectedSeat={undefined}
+          onSeatChange={undefined}
+        />
       </div>
-
-      {/* 🪑 좌석 선택 UI */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-xl font-semibold text-yellow-500 mb-4">
-          좌석 선택
-        </h2>
-        <SeatsTable seat={selectedSeat ?? -1} onSeatChange={setSelectedSeat} />
-        {selectedSeat !== null && (
-          <p className="mt-4 font-bold text-green-600">
-            선택한 좌석: {selectedSeat}번
-          </p>
-        )}
-        <div className="mt-6 flex justify-center">
-          <Button
-            onClick={handleStart}
-            className="bg-yellow-400 text-white px-6 py-3 rounded-xl shadow hover:bg-yellow-500 transition"
-          >
-            완료
-          </Button>
-        </div>
-      </div>
-    </main>
+    </div>
   );
 }
