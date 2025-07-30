@@ -63,7 +63,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from("survey")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("author", user.id)
         .single();
 
       if (data) {
@@ -130,7 +130,7 @@ export default function Home() {
           title: mainTitle,
           title_contents: mainDesc,
           questions: questionData,
-          user_id: user.id,
+          author: user.id,
           bool: true,
         },
       ]);

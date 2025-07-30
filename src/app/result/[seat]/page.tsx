@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/utils/client";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // survey 배열에 들어갈 객체 하나의 타입을 정의합니다.
 interface SurveyItem {
@@ -21,6 +22,7 @@ export default function ResultPage() {
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
   const seat = params.seat as string;
+  const router = useRouter();
 
   useEffect(() => {
     const checkUserAndFetchData = async () => {
@@ -38,10 +40,10 @@ export default function ResultPage() {
       console.log("현재 seat 값:", seat);
 
       try {
-        // 1. seats 테이블에서 해당 seat의 author 값을 가져옵니다.
+        // 1. seats 테이블에서 해당 seat의 id 값을 가져옵니다.
         const { data: seatData, error: seatError } = await supabase
           .from("seats")
-          .select("author")
+          .select("id")
           .eq("seat", seat)
           .single();
 
@@ -52,19 +54,19 @@ export default function ResultPage() {
           return;
         }
 
-        if (!seatData || !seatData.author) {
-          setError("해당 좌석의 작성자 정보를 찾을 수 없습니다.");
+        if (!seatData || !seatData.id) {
+          setError("해당 좌석의 ID 정보를 찾을 수 없습니다.");
           setLoading(false);
           return;
         }
 
-        console.log("찾은 author:", seatData.author);
+        console.log("찾은 seat id:", seatData.id);
 
-        // 2. survey 테이블에서 해당 author와 같은 author를 가진 데이터를 가져옵니다.
+        // 2. survey 테이블에서 해당 id와 같은 author를 가진 데이터를 가져옵니다.
         const { data: surveyData, error: surveyError } = await supabase
           .from("survey")
           .select("*")
-          .eq("author", seatData.author)
+          .eq("author", seatData.id)
           .order("id", { ascending: true });
 
         if (surveyError) {
@@ -155,6 +157,9 @@ export default function ResultPage() {
       </p>
     );
 
+  console.log("1 session", userId);
+  console.log("2 table", survey);
+
   return (
     <div>
       <div className="flex flex-col min-h-[100%-54px] w-full h-fit items-center bg-[#ffd90066] p-10 gap-5">
@@ -183,7 +188,7 @@ export default function ResultPage() {
                     position: "relative",
                   }}
                 >
-                  {userId && item.uuid === userId && (
+                  {userId && item.author === userId && (
                     <button
                       style={{
                         position: "absolute",
@@ -195,6 +200,9 @@ export default function ResultPage() {
                         border: "none",
                         borderRadius: "4px",
                         cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        router.push(`/question`);
                       }}
                     >
                       수정
