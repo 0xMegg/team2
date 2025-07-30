@@ -8,20 +8,28 @@ interface SeatData {
 }
 
 interface SeatsTableProps {
+  // 회원가입 페이지용 props (기존)
+  seat?: number;
+  onSeatChange?: (seatNumber: number) => void;
+
+  // 랜딩 페이지용 props (새로운)
   seatsData?: SeatData[];
   selectedSeat?: number;
-  onSeatChange?: (seatNumber: number) => void;
 }
 
 export default function SeatsTable({
+  seat,
+  onSeatChange,
   seatsData = [],
   selectedSeat,
-  onSeatChange,
 }: SeatsTableProps) {
   const rowNumbers = [0, 1, 2, 3, 4];
 
+  // 회원가입 페이지에서는 seat prop을 사용, 랜딩 페이지에서는 selectedSeat prop을 사용
+  const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
+
   const onClick = (seatNumber: number) => {
-    if (onSeatChange && selectedSeat !== seatNumber) {
+    if (onSeatChange && currentSelectedSeat !== seatNumber) {
       onSeatChange(seatNumber);
     }
   };
@@ -34,7 +42,7 @@ export default function SeatsTable({
     const seatData = getSeatData(seatNumber);
     const isOccupied = seatData && seatData.profileImage;
 
-    if (selectedSeat === seatNumber) {
+    if (currentSelectedSeat === seatNumber) {
       return "w-20 h-20 bg-yellow-300 hover:bg-yellow-400 text-white text-center flex flex-col items-center justify-center";
     } else if (isOccupied) {
       return "w-20 h-20 bg-green-200 text-center";
