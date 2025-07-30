@@ -1,0 +1,33 @@
+[33m4d7b83b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/question-form-v2[m[33m, [m[1;31morigin/feature/question-form-v2[m[33m, [m[1;31morigin/feature/auth-ui[m[33m, [m[1;32mmain[m[33m, [m[1;32mfeature/auth-ui[m[33m)[m 회원가입, 로그인 UI 구현
+[33m1dadb64[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/question-form[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mfeature/question-form[m[33m)[m 메타 데이터 수정
+[33mb8cb440[m Delete .next directory
+[33ma2cbe21[m Merge commit '71446ae'
+[33m4afb864[m 로그인 페이지에 form 삽입
+[33m71446ae[m Delete .next directory
+[33m33daac3[m 회원가입 이메일 입력 영역 추가
+[33mfdd26b1[m .env 삭제
+[33m4e41259[m 초기화 버튼 삭제
+[33mba74803[m Merge pull request #2 from 0xMegg/front/comp
+[33m4bbb741[m 손머지
+[33m6621515[m 이메일 textbox 제외하고 로그인 기능 구현
+[33m9136345[m 선택지_주소
+[33mdf79f4b[m 이미지 업로드 가능은 하게 signup페이지 완성
+[33m640e5b1[m 버튼용 아이콘 이미지 저장
+[33m8e1a1fc[m seatsTable 기능 구현 완성
+[33m14d9aac[m questionbox 컴포넌트 분리
+[33m8fc34c7[m main-title.tsx 에서 질문박스 제거
+[33m12769ee[m 항목추가 버튼 기능
+[33m06698a7[m main-page.tsx 배경색, 하단 버튼 추가
+[33m9ff91f2[m 임시 shadcn form 작성 성공
+[33m140118b[m 첫 assemble
+[33m6130912[m temp commit
+[33m7a3f7ab[m 일단 supabase 돌아가는 next 프로젝트 최종 세팅
+[33m05296f8[m 프로젝트 또 갈아 엎음 제발 마지막
+[33md4b52e2[m supabase 연결
+[33m5de5077[m 테스트 컴포넌트 적용
+[33m10eef87[m supabase 포함 next 프로젝트로 재시작
+[33m42a55dd[m supabase 포함 next 프로젝트로 재시작
+[33m1a2526b[m gitignore에 dotenv 추가
+[33m91d295c[m supabase 연결
+[33m1cdf300[m 기본 라이브러리들 설치
+[33m51f8385[m 2조 첫 커밋

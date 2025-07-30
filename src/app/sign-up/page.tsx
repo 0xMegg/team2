@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
+import EggBackground from "@/components/EggBackGround";
 
 const formSchema = z
   .object({
@@ -171,108 +172,7 @@ export default function SignUp() {
   return (
     <Form {...form}>
       <div className="min-h-screen flex items-center justify-center bg-[#ffd90066] px-4">
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <img
-            src="/favicon.png"
-            alt="계란1"
-            className="absolute top-4 left-4 w-8 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란2"
-            className="absolute top-16 right-8 w-10 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란3"
-            className="absolute bottom-12 left-10 w-12 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란4"
-            className="absolute bottom-4 right-6 w-9 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란5"
-            className="absolute top-1/2 left-1 w-9 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란6"
-            className="absolute top-1/3 right-1/4 w-11 opacity-15"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란7"
-            className="absolute bottom-1/2 left-1/3 w-7 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란8"
-            className="absolute bottom-20 right-1/5 w-10 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란9"
-            className="absolute top-[70%] left-[45%] w-8 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란10"
-            className="absolute bottom-[30%] right-[35%] w-12 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란11"
-            className="absolute top-8 left-1/2 w-9 opacity-15"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란12"
-            className="absolute top-0 right-1/2 w-10 opacity-10"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란13"
-            className="absolute top-1/4 left-[10%] w-7 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란14"
-            className="absolute top-1/4 right-[15%] w-6 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란15"
-            className="absolute top-[60%] left-[10%] w-8 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란16"
-            className="absolute bottom-[10%] left-[5%] w-10 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란17"
-            className="absolute bottom-[15%] right-[10%] w-9 opacity-25"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란18"
-            className="absolute bottom-[5%] left-[40%] w-11 opacity-30"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란19"
-            className="absolute top-[15%] right-[5%] w-8 opacity-20"
-          />
-          <img
-            src="/favicon.png"
-            alt="계란20"
-            className="absolute bottom-[50%] right-[45%] w-7 opacity-30"
-          />
-        </div>
+        <EggBackground />
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow flex flex-col md:flex-row gap-6"

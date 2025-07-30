@@ -1,6 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import EggBackground from "@/components/EggBackGround";
+import SeatsTable from "@/components/seatsTable";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { supabase } from "../../utils/client";
 import { useEffect } from "react";
