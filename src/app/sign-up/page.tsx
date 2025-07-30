@@ -122,6 +122,7 @@ export default function SignUp() {
             id: userId, // auth.users.id와 동일한 값을 fk로 사용!
             seat: values.seat,
             profileImage: profileImageUrl,
+            username: values.username,
           },
         ]);
         if (seatError) {
