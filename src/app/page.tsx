@@ -13,6 +13,7 @@ interface SeatData {
   id: number;
   seat: number;
   profileImage?: string;
+  userName: string;
   // 다른 필요한 필드들도 추가할 수 있습니다
 }
 
@@ -35,7 +36,7 @@ export default function Home() {
 
   return (
     <div className="min-w-100 min-h-100 bg-[#ffd90066]">
-      <div className="p-4">
+      <div className="p-4 flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold mb-4 text-center">좌석 현황</h1>
         <SeatsTable
           seatsData={seatsData}
