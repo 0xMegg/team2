@@ -24,6 +24,13 @@ import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
 import EggBackground from "@/components/eggBackGround";
 
+interface SeatData {
+  id: number;
+  seat: number;
+  profileImage?: string;
+  userName: string;
+}
+
 const formSchema = z
   .object({
     email: z.string().email({
@@ -55,6 +62,7 @@ export default function SignUp() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [thumbnail, setThumbnail] = useState<string | File | null>(null); // 썸네일은 파일 업로드를 통해 설정할 수 있습니다. 임시 저장 같은 경우에는 null일 수 있습니다.
+  const [seatsData, setSeatsData] = useState<SeatData[]>([]);
 
   // URL에서 좌석 정보 가져오기
   const seatFromUrl = searchParams.get("seat");
@@ -74,12 +82,28 @@ export default function SignUp() {
     },
   });
 
+  // 기존 좌석 데이터 가져오기
+  async function readSeatsData() {
+    const { data: seats, error } = await supabase.from("seats").select("*");
+    if (error) {
+      console.error("Error reading seats:", error);
+    } else {
+      console.log("seats:", seats);
+      setSeatsData(seats || []);
+    }
+  }
+
   // URL에서 좌석 정보가 변경되면 폼 업데이트
   useEffect(() => {
     if (seatFromUrl) {
       form.setValue("seat", parseInt(seatFromUrl));
     }
   }, [seatFromUrl, form]);
+
+  // 컴포넌트 마운트 시 좌석 데이터 가져오기
+  useEffect(() => {
+    readSeatsData();
+  }, []);
 
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -328,6 +352,7 @@ export default function SignUp() {
                     <SeatsTable
                       seat={field.value}
                       onSeatChange={field.onChange}
+                      seatsData={seatsData}
                     />
                   </FormControl>
                   <FormDescription>앉은 자리를 선택해주세요</FormDescription>

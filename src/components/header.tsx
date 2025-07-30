@@ -3,11 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import {
-  useAuthStore,
-  getCurrentUser,
-  isUserAuthenticated,
-} from "@/stores/auth";
+import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
@@ -34,15 +30,7 @@ export default function Header() {
             <span className="text-sm text-gray-700">
               안녕하세요, {user.name}님!
             </span>
-            <Link href="/question">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-gray-500 hover:text-black transition-colors"
-              >
-                작성
-              </Button>
-            </Link>
+
             <Button
               variant="outline"
               size="sm"
@@ -59,12 +47,6 @@ export default function Header() {
               className="text-gray-500 text-sm hover:text-black transition-colors"
             >
               로그인
-            </Link>
-            <Link
-              href="/sign-up"
-              className="text-gray-500 text-sm hover:text-black transition-colors"
-            >
-              회원가입
             </Link>
           </>
         )}
