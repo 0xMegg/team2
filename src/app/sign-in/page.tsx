@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { supabase } from "@/utils/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -49,7 +49,11 @@ function SignInContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuthStore();
+
+  // URL에서 redirect 파라미터 가져오기
+  const redirectPath = searchParams.get("redirect") || "/";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,7 +109,7 @@ function SignInContent() {
         login(user, accessToken);
 
         toast.success("로그인에 성공했습니다! 🎉");
-        router.push("/"); // 메인 페이지로 리다이렉션
+        router.push(redirectPath); // 지정된 경로로 리다이렉션
         console.log("로그인 성공:", { user, accessToken });
       }
     } catch (error) {
@@ -178,6 +182,7 @@ function SignInContent() {
                         <FormControl>
                           <Input
                             placeholder="비밀번호를 입력해주세요."
+                            type="password"
                             {...field}
                           />
                         </FormControl>
