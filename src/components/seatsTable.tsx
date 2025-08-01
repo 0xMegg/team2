@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Card } from "./ui/card";
 import { useRouter } from "next/navigation";
 import { getRandomSeatTitle } from "@/lib/constants";
+import { supabase } from "@/utils/client";
 
 interface SeatData {
   id: number;
@@ -32,7 +33,7 @@ export default function SeatsTable({
   // 회원가입 페이지에서는 seat prop을 사용, 랜딩 페이지에서는 selectedSeat prop을 사용
   const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
 
-  const onClick = (seatNumber: number) => {
+  const onClick = async (seatNumber: number) => {
     // 이미 가입된 좌석인지 확인
     const seatData = getSeatData(seatNumber);
 
@@ -53,8 +54,68 @@ export default function SeatsTable({
         // 사용자 데이터가 없는 좌석을 클릭했을 때 sign-up 페이지로 이동
         router.push(`/sign-up?seat=${seatNumber}`);
       } else {
-        // 사용자 데이터가 있는 좌석을 클릭했을 때 result 페이지로 이동
-        router.push(`/result/${seatNumber}`);
+        // 사용자 데이터가 있는 좌석을 클릭했을 때
+        try {
+          // 현재 로그인된 사용자 정보 가져오기
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+
+          if (!user) {
+            // 로그인되지 않은 경우 sign-in 페이지로 이동하되, 로그인 후 /result/${seatNumber}로 이동하도록 쿼리 파라미터 추가
+            router.push(`/sign-in?redirect=/result/${seatNumber}`);
+            return;
+          }
+
+          // 해당 좌석의 사용자 ID 가져오기
+          const { data: seatUserData, error: seatError } = await supabase
+            .from("seats")
+            .select("id")
+            .eq("seat", seatNumber)
+            .single();
+
+          if (seatError || !seatUserData) {
+            console.error("좌석 정보를 찾을 수 없습니다:", seatError);
+            return;
+          }
+
+          // 해당 좌석이 현재 사용자의 좌석인지 확인
+          if (seatUserData.id === user.id) {
+            // 자신의 테이블인 경우 survey 테이블에서 required 필드 확인
+            const { data: surveyData, error: surveyError } = await supabase
+              .from("survey")
+              .select("questions")
+              .eq("author", user.id)
+              .single();
+
+            if (surveyError || !surveyData) {
+              // survey 데이터가 없거나 오류인 경우 /question으로 이동
+              router.push("/question");
+              return;
+            }
+
+            // questions 배열에서 required 필드 확인
+            const questions = surveyData.questions || [];
+            const hasRequiredQuestions = questions.some(
+              (q: { required?: boolean }) => q.required === true
+            );
+
+            if (hasRequiredQuestions) {
+              // required가 true인 질문이 있으면 /result/${seatNumber}로 이동
+              router.push(`/result/${seatNumber}`);
+            } else {
+              // required가 null이거나 false인 경우 /question으로 이동
+              router.push("/question");
+            }
+          } else {
+            // 다른 사용자의 좌석인 경우 /result/${seatNumber}로 이동
+            router.push(`/result/${seatNumber}`);
+          }
+        } catch (error) {
+          console.error("좌석 클릭 처리 중 오류 발생:", error);
+          // 오류 발생 시 기본적으로 /result/${seatNumber}로 이동
+          router.push(`/result/${seatNumber}`);
+        }
       }
     }
   };
