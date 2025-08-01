@@ -37,7 +37,10 @@ const formSchema = z
       message: "유효한 이메일 주소를 입력해주세요.",
     }),
     username: z.string().min(2, {
-      message: "사용자명은 최소 2자 이상이어야 합니다.",
+      message: "본명은 최소 2자 이상이어야 합니다.",
+    }),
+    title: z.string().max(5, {
+      message: "칭호는 최대 5자 이하이어야 합니다.",
     }),
     password: z.string().min(6, {
       message: "비밀번호는 최소 6자 이상이어야 합니다.",
@@ -74,6 +77,7 @@ export default function SignUp() {
     defaultValues: {
       email: "",
       username: "",
+      title: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -142,6 +146,7 @@ export default function SignUp() {
         options: {
           data: {
             username: values.username,
+            title: values.title,
             terms: values.terms,
             seat: values.seat,
             profileImage: profileImageUrl,
@@ -210,10 +215,10 @@ export default function SignUp() {
         <EggBackground />
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow flex flex-col md:flex-row gap-6"
+          className="w-full max-w-4xl mx-auto p-6 bg-white flex flex-col md:flex-row gap-6"
         >
           {/* 이메일 입력 */}
-          <div className="w-80 md:w-1/2 space-y-6">
+          <div className="w-80 md:w-1/2">
             <FormField
               control={form.control}
               name="email"
@@ -221,9 +226,14 @@ export default function SignUp() {
                 <FormItem>
                   <FormLabel>이메일</FormLabel>
                   <FormControl>
-                    <Input placeholder="이메일을 입력해주세요" {...field} />
+                    <Input
+                      placeholder="깃허브에 사용 중인 이메일을 입력해주세요"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -233,11 +243,32 @@ export default function SignUp() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>사용자명</FormLabel>
+                  <FormLabel>본명</FormLabel>
                   <FormControl>
-                    <Input placeholder="사용자명을 입력해주세요" {...field} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+            {/* 칭호 입력 */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>칭호</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="칭호는 미입력시 자동으로 부여됩니다"
+                      {...field}
+                    />
+                  </FormControl>
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -249,13 +280,11 @@ export default function SignUp() {
                 <FormItem>
                   <FormLabel>비밀번호</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="비밀번호를 입력해주세요"
-                      {...field}
-                    />
+                    <Input type="password" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -267,13 +296,11 @@ export default function SignUp() {
                 <FormItem>
                   <FormLabel>비밀번호 확인</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="비밀번호를 다시 입력해주세요"
-                      {...field}
-                    />
+                    <Input type="password" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -294,7 +321,9 @@ export default function SignUp() {
                   <FormDescription>
                     이용약관 및 개인정보 처리방침에 동의합니다.
                   </FormDescription>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -323,7 +352,9 @@ export default function SignUp() {
                   <FormDescription>
                     프로필 이미지를 업로드해주세요
                   </FormDescription>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                   {/* ✅ 미리보기 박스 추가 */}
                   {previewUrl && (
                     <div className="mt-4 w-32 h-32 border rounded-md overflow-hidden">
@@ -356,7 +387,9 @@ export default function SignUp() {
                     />
                   </FormControl>
                   <FormDescription>앉은 자리를 선택해주세요</FormDescription>
-                  <FormMessage />
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
