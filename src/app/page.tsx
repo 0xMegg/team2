@@ -2,15 +2,9 @@
 
 import EggBackground from "@/components/eggBackground";
 import SeatsTable from "@/components/seatsTable";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
 import { supabase } from "../../utils/client";
 import { useEffect } from "react";
-import MainPartComponent from "../components/main-part";
-import MainTitleComponent from "../components/main-title";
-import QuestionBoxComponent from "../components/question-box";
+import { useState } from "react";
 
 interface SeatData {
   id: number;

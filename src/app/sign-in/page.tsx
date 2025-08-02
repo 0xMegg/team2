@@ -10,11 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { supabase } from "@/utils/client";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -23,7 +23,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -46,8 +45,6 @@ const formSchema = z.object({
 });
 
 function SignInContent() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuthStore();
@@ -97,23 +94,16 @@ function SignInContent() {
         const user = {
           id: data.user.id,
           email: data.user.email!,
-          name:
-            data.user.user_metadata?.username ||
-            data.user.email?.split("@")[0] ||
-            "사용자",
+          name: data.user.user_metadata?.username || data.user.email!,
         };
 
-        const accessToken = data.session.access_token;
+        login(user, data.session.access_token);
 
-        // 인증 스토어에 로그인 정보 저장
-        login(user, accessToken);
-
-        toast.success("로그인에 성공했습니다! 🎉");
-        router.push(redirectPath); // 지정된 경로로 리다이렉션
-        console.log("로그인 성공:", { user, accessToken });
+        toast.success("로그인되었습니다! 🎉");
+        router.push(redirectPath);
       }
     } catch (error) {
-      console.error("로그인 중 오류 발생:", error);
+      console.error("로그인 중 예상치 못한 오류:", error);
       toast.error("로그인 중 예상치 못한 오류가 발생했습니다.");
     }
   };
@@ -209,7 +199,9 @@ function SignInContent() {
 export default function SignIn() {
   return (
     <GuestGuard>
-      <SignInContent />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SignInContent />
+      </Suspense>
     </GuestGuard>
   );
 }
