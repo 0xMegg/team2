@@ -69,19 +69,12 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-6">
             {isAuthenticated && user ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-yellow-700">
-                      {user.name?.charAt(0) || "U"}
-                    </span>
-                  </div>
-                  <span
-                    className="text-sm text-gray-700 font-medium"
-                    style={{ fontFamily: "'BagelFatOne-Regular', sans-serif" }}
-                  >
-                    {user.name}님
-                  </span>
-                </div>
+                <span
+                  className="text-sm text-gray-700 font-medium"
+                  style={{ fontFamily: "'BagelFatOne-Regular', sans-serif" }}
+                >
+                  {user.name}님
+                </span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -150,11 +143,6 @@ export default function Header() {
             <div className="px-4 py-4 space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-yellow-700">
-                      {user.name?.charAt(0) || "U"}
-                    </span>
-                  </div>
                   <div>
                     <p
                       className="font-medium text-gray-900"
