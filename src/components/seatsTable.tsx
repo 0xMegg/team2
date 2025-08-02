@@ -35,11 +35,16 @@ export default function SeatsTable({
   const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
 
   const onClick = async (seatNumber: number) => {
+    // 4번 좌석은 클릭 불가
+    if (seatNumber === 4) {
+      return;
+    }
+
     // 이미 가입된 좌석인지 확인
     const seatData = getSeatData(seatNumber);
 
     // 회원가입 페이지에서만 이미 가입된 좌석 선택 불가
-    if (onSeatChange && seatData && seatData.profileImage) {
+    if (onSeatChange && seatData && seatData.seat) {
       // 이미 가입된 좌석은 선택 불가
       return;
     }
@@ -51,7 +56,7 @@ export default function SeatsTable({
 
     // 랜딩 페이지에서 사용하는 경우
     if (!onSeatChange) {
-      if (!seatData || !seatData.profileImage) {
+      if (!seatData || !seatData.seat) {
         // 사용자 데이터가 없는 좌석을 클릭했을 때 sign-up 페이지로 이동
         router.push(`/sign-up?seat=${seatNumber}`);
       } else {
@@ -122,6 +127,15 @@ export default function SeatsTable({
   };
 
   const getSeatData = (seatNumber: number) => {
+    // 4번 좌석은 특별히 "Error"라는 title을 가진 데이터 반환
+    if (seatNumber === 4) {
+      return {
+        seat: 4,
+        title: "Error",
+        userName: "",
+        profileImage: null,
+      };
+    }
     return seatsData.find((seat) => seat.seat === seatNumber);
   };
 
@@ -143,8 +157,13 @@ export default function SeatsTable({
       baseStyle += " rounded-r-lg";
     }
 
+    // 4번 좌석은 클릭 불가
+    if (seatNumber === 4) {
+      return `${baseStyle} cursor-not-allowed`;
+    }
+
     // 이미 가입된 좌석인 경우 (회원가입 페이지에서만 회색 배경 적용)
-    if (seatData && seatData.profileImage && onSeatChange) {
+    if (seatData && seatData.seat && onSeatChange) {
       return `${baseStyle} bg-gray-300 cursor-not-allowed`;
     }
 
@@ -164,30 +183,41 @@ export default function SeatsTable({
               className={getCardStyle(rowNumber * 6 + 1, true, false)}
               onClick={() => onClick(rowNumber * 6 + 1)}
             >
-              {getSeatData(rowNumber * 6 + 1)?.profileImage ? (
+              {getSeatData(rowNumber * 6 + 1)?.seat &&
+              getSeatData(rowNumber * 6 + 1)?.seat !== 4 ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 1)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 1)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 1)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center"></div>
+                    )}
                   </div>
                 ) : (
                   // 랜딩 페이지: username과 title 표시
                   <div className="w-full h-20 flex items-center justify-between">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 1)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full ml-2"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 1)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 1)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full ml-2"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center ml-2"></div>
+                    )}
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                      <p>{getSeatData(rowNumber * 6 + 1)?.userName}</p>
+                      <p className="min-h-[1.25rem]">
+                        {getSeatData(rowNumber * 6 + 1)?.userName || ""}
+                      </p>
                       <p>
                         {getSeatData(rowNumber * 6 + 1)?.title ||
                           getRandomSeatTitle()}
@@ -196,37 +226,52 @@ export default function SeatsTable({
                   </div>
                 )
               ) : (
-                <div className="text-xs">{rowNumber * 6 + 1}</div>
+                <div className="text-xs">
+                  {getSeatData(rowNumber * 6 + 1)?.seat === 4
+                    ? "Error"
+                    : rowNumber * 6 + 1}
+                </div>
               )}
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 2, false, true)}
               onClick={() => onClick(rowNumber * 6 + 2)}
             >
-              {getSeatData(rowNumber * 6 + 2)?.profileImage ? (
+              {getSeatData(rowNumber * 6 + 2)?.seat &&
+              getSeatData(rowNumber * 6 + 2)?.seat !== 4 ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 2)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 2)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 2)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center"></div>
+                    )}
                   </div>
                 ) : (
                   // 랜딩 페이지: username과 title 표시
                   <div className="w-full h-20 flex items-center justify-between">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 2)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full ml-2"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 2)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 2)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full ml-2"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center ml-2"></div>
+                    )}
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                      <p>{getSeatData(rowNumber * 6 + 2)?.userName}</p>
+                      <p className="min-h-[1.25rem]">
+                        {getSeatData(rowNumber * 6 + 2)?.userName || ""}
+                      </p>
                       <p>
                         {getSeatData(rowNumber * 6 + 2)?.title ||
                           getRandomSeatTitle()}
@@ -235,7 +280,11 @@ export default function SeatsTable({
                   </div>
                 )
               ) : (
-                <div className="text-xs">{rowNumber * 6 + 2}</div>
+                <div className="text-xs">
+                  {getSeatData(rowNumber * 6 + 2)?.seat === 4
+                    ? "Error"
+                    : rowNumber * 6 + 2}
+                </div>
               )}
             </Card>
           </div>
@@ -244,30 +293,41 @@ export default function SeatsTable({
               className={getCardStyle(rowNumber * 6 + 3, true, false)}
               onClick={() => onClick(rowNumber * 6 + 3)}
             >
-              {getSeatData(rowNumber * 6 + 3)?.profileImage ? (
+              {getSeatData(rowNumber * 6 + 3)?.seat &&
+              getSeatData(rowNumber * 6 + 3)?.seat !== 4 ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 3)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 3)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 3)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center"></div>
+                    )}
                   </div>
                 ) : (
                   // 랜딩 페이지: username과 title 표시
                   <div className="w-full h-20 flex items-center justify-between">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 3)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full ml-2"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 3)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 3)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full ml-2"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center ml-2"></div>
+                    )}
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                      <p>{getSeatData(rowNumber * 6 + 3)?.userName}</p>
+                      <p className="min-h-[1.25rem]">
+                        {getSeatData(rowNumber * 6 + 3)?.userName || ""}
+                      </p>
                       <p>
                         {getSeatData(rowNumber * 6 + 3)?.title ||
                           getRandomSeatTitle()}
@@ -276,37 +336,52 @@ export default function SeatsTable({
                   </div>
                 )
               ) : (
-                <div className="text-xs">{rowNumber * 6 + 3}</div>
+                <div className="text-xs">
+                  {getSeatData(rowNumber * 6 + 3)?.seat === 4
+                    ? "Error"
+                    : rowNumber * 6 + 3}
+                </div>
               )}
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 4, false, true)}
               onClick={() => onClick(rowNumber * 6 + 4)}
             >
-              {getSeatData(rowNumber * 6 + 4)?.profileImage ? (
+              {getSeatData(rowNumber * 6 + 4)?.seat &&
+              getSeatData(rowNumber * 6 + 4)?.seat !== 4 ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 4)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 4)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 4)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center"></div>
+                    )}
                   </div>
                 ) : (
                   // 랜딩 페이지: username과 title 표시
                   <div className="w-full h-20 flex items-center justify-between">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 4)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full ml-2"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 4)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 4)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full ml-2"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center ml-2"></div>
+                    )}
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                      <p>{getSeatData(rowNumber * 6 + 4)?.userName}</p>
+                      <p className="min-h-[1.25rem]">
+                        {getSeatData(rowNumber * 6 + 4)?.userName || ""}
+                      </p>
                       <p>
                         {getSeatData(rowNumber * 6 + 4)?.title ||
                           getRandomSeatTitle()}
@@ -315,7 +390,11 @@ export default function SeatsTable({
                   </div>
                 )
               ) : (
-                <div className="text-xs">{rowNumber * 6 + 4}</div>
+                <div className="text-xs">
+                  {getSeatData(rowNumber * 6 + 4)?.seat === 4
+                    ? "Error"
+                    : rowNumber * 6 + 4}
+                </div>
               )}
             </Card>
           </div>
@@ -324,30 +403,41 @@ export default function SeatsTable({
               className={getCardStyle(rowNumber * 6 + 5, true, false)}
               onClick={() => onClick(rowNumber * 6 + 5)}
             >
-              {getSeatData(rowNumber * 6 + 5)?.profileImage ? (
+              {getSeatData(rowNumber * 6 + 5)?.seat &&
+              getSeatData(rowNumber * 6 + 5)?.seat !== 4 ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 5)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 5)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 5)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center"></div>
+                    )}
                   </div>
                 ) : (
                   // 랜딩 페이지: username과 title 표시
                   <div className="w-full h-20 flex items-center justify-between">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 5)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full ml-2"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 5)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 5)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full ml-2"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center ml-2"></div>
+                    )}
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                      <p>{getSeatData(rowNumber * 6 + 5)?.userName}</p>
+                      <p className="min-h-[1.25rem]">
+                        {getSeatData(rowNumber * 6 + 5)?.userName || ""}
+                      </p>
                       <p>
                         {getSeatData(rowNumber * 6 + 5)?.title ||
                           getRandomSeatTitle()}
@@ -356,37 +446,52 @@ export default function SeatsTable({
                   </div>
                 )
               ) : (
-                <div className="text-xs">{rowNumber * 6 + 5}</div>
+                <div className="text-xs">
+                  {getSeatData(rowNumber * 6 + 5)?.seat === 4
+                    ? "Error"
+                    : rowNumber * 6 + 5}
+                </div>
               )}
             </Card>
             <Card
               className={getCardStyle(rowNumber * 6 + 6, false, true)}
               onClick={() => onClick(rowNumber * 6 + 6)}
             >
-              {getSeatData(rowNumber * 6 + 6)?.profileImage ? (
+              {getSeatData(rowNumber * 6 + 6)?.seat &&
+              getSeatData(rowNumber * 6 + 6)?.seat !== 4 ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 6)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 6)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 6)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center"></div>
+                    )}
                   </div>
                 ) : (
                   // 랜딩 페이지: username과 title 표시
                   <div className="w-full h-20 flex items-center justify-between">
-                    <Image
-                      src={getSeatData(rowNumber * 6 + 6)?.profileImage || ""}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full ml-2"
-                      width={64}
-                      height={64}
-                    />
+                    {getSeatData(rowNumber * 6 + 6)?.profileImage ? (
+                      <Image
+                        src={getSeatData(rowNumber * 6 + 6)?.profileImage || ""}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full ml-2"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center ml-2"></div>
+                    )}
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
-                      <p>{getSeatData(rowNumber * 6 + 6)?.userName}</p>
+                      <p className="min-h-[1.25rem]">
+                        {getSeatData(rowNumber * 6 + 6)?.userName || ""}
+                      </p>
                       <p>
                         {getSeatData(rowNumber * 6 + 6)?.title ||
                           getRandomSeatTitle()}
@@ -395,7 +500,11 @@ export default function SeatsTable({
                   </div>
                 )
               ) : (
-                <div className="text-xs">{rowNumber * 6 + 6}</div>
+                <div className="text-xs">
+                  {getSeatData(rowNumber * 6 + 6)?.seat === 4
+                    ? "Error"
+                    : rowNumber * 6 + 6}
+                </div>
               )}
             </Card>
           </div>
