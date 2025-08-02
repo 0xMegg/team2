@@ -8,6 +8,7 @@ interface SeatData {
   id: number;
   seat: number;
   userName: string;
+  title?: string;
   profileImage?: string;
   // 다른 필요한 필드들도 추가할 수 있습니다
 }
@@ -69,7 +70,7 @@ export default function SeatsTable({
 
           // 해당 좌석의 사용자 ID 가져오기
           const { data: seatUserData, error: seatError } = await supabase
-            .from("seats")
+            .from("userInfo")
             .select("id")
             .eq("seat", seatNumber)
             .single();
@@ -187,7 +188,10 @@ export default function SeatsTable({
                     />
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
                       <p>{getSeatData(rowNumber * 6 + 1)?.userName}</p>
-                      <p>{getRandomSeatTitle()}</p>
+                      <p>
+                        {getSeatData(rowNumber * 6 + 1)?.title ||
+                          getRandomSeatTitle()}
+                      </p>
                     </div>
                   </div>
                 )
@@ -223,7 +227,10 @@ export default function SeatsTable({
                     />
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
                       <p>{getSeatData(rowNumber * 6 + 2)?.userName}</p>
-                      <p>{getRandomSeatTitle()}</p>
+                      <p>
+                        {getSeatData(rowNumber * 6 + 2)?.title ||
+                          getRandomSeatTitle()}
+                      </p>
                     </div>
                   </div>
                 )
@@ -261,7 +268,10 @@ export default function SeatsTable({
                     />
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
                       <p>{getSeatData(rowNumber * 6 + 3)?.userName}</p>
-                      <p>{getRandomSeatTitle()}</p>
+                      <p>
+                        {getSeatData(rowNumber * 6 + 3)?.title ||
+                          getRandomSeatTitle()}
+                      </p>
                     </div>
                   </div>
                 )
@@ -297,7 +307,10 @@ export default function SeatsTable({
                     />
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
                       <p>{getSeatData(rowNumber * 6 + 4)?.userName}</p>
-                      <p>{getRandomSeatTitle()}</p>
+                      <p>
+                        {getSeatData(rowNumber * 6 + 4)?.title ||
+                          getRandomSeatTitle()}
+                      </p>
                     </div>
                   </div>
                 )
@@ -335,7 +348,10 @@ export default function SeatsTable({
                     />
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
                       <p>{getSeatData(rowNumber * 6 + 5)?.userName}</p>
-                      <p>{getRandomSeatTitle()}</p>
+                      <p>
+                        {getSeatData(rowNumber * 6 + 5)?.title ||
+                          getRandomSeatTitle()}
+                      </p>
                     </div>
                   </div>
                 )
@@ -371,7 +387,10 @@ export default function SeatsTable({
                     />
                     <div className="w-full flex flex-col items-end justify-center gap- mr-2">
                       <p>{getSeatData(rowNumber * 6 + 6)?.userName}</p>
-                      <p>{getRandomSeatTitle()}</p>
+                      <p>
+                        {getSeatData(rowNumber * 6 + 6)?.title ||
+                          getRandomSeatTitle()}
+                      </p>
                     </div>
                   </div>
                 )

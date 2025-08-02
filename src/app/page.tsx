@@ -17,6 +17,7 @@ interface SeatData {
   seat: number;
   profileImage?: string;
   userName: string;
+  title?: string;
   // 다른 필요한 필드들도 추가할 수 있습니다
 }
 
@@ -24,7 +25,7 @@ export default function Home() {
   const [seatsData, setSeatsData] = useState<SeatData[]>([]);
 
   async function readRows() {
-    const { data: seats, error } = await supabase.from("seats").select("*");
+    const { data: seats, error } = await supabase.from("userInfo").select("*");
     if (error) {
       console.error("Error reading topics:", error);
     } else {

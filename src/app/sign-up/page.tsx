@@ -29,6 +29,7 @@ interface SeatData {
   seat: number;
   profileImage?: string;
   userName: string;
+  title?: string;
 }
 
 const formSchema = z
@@ -88,7 +89,7 @@ export default function SignUp() {
 
   // 기존 좌석 데이터 가져오기
   async function readSeatsData() {
-    const { data: seats, error } = await supabase.from("seats").select("*");
+    const { data: seats, error } = await supabase.from("userInfo").select("*");
     if (error) {
       console.error("Error reading seats:", error);
     } else {
@@ -156,20 +157,25 @@ export default function SignUp() {
 
       // 회원가입 후...
       if (data.user) {
-        const userId = data.user.id; // 자동 생성된 uuid
+        const user = data.user; // 자동 생성된 uuid
 
-        // seats 테이블에 같은 uuid(fk)로 insert
-        const { error: seatError } = await supabase.from("seats").insert([
+        // userInfo 테이블에 같은 uuid(fk)로 insert
+        const { error: seatError } = await supabase.from("userInfo").insert([
           {
-            id: userId, // auth.users.id와 동일한 값을 fk로 사용!
+            id: user.id,
             seat: values.seat,
-            profileImage: profileImageUrl,
             userName: values.username,
+            title: values.title,
+            profileImage: profileImageUrl,
           },
         ]);
+
         if (seatError) {
-          toast.error("seats 테이블에 좌석 정보 저장에 실패했습니다.");
-          console.log(seatError);
+          console.error(
+            "userInfo 테이블에 좌석 정보 저장에 실패했습니다:",
+            seatError
+          );
+          toast.error("userInfo 테이블에 좌석 정보 저장에 실패했습니다.");
           return;
         }
       }
@@ -218,7 +224,7 @@ export default function SignUp() {
           className="w-full max-w-4xl mx-auto p-6 bg-white flex flex-col md:flex-row gap-6"
         >
           {/* 이메일 입력 */}
-          <div className="w-80 md:w-1/2">
+          <div className="w-80 md:w-1/2 flex flex-col gap-1">
             <FormField
               control={form.control}
               name="email"
@@ -231,7 +237,7 @@ export default function SignUp() {
                       {...field}
                     />
                   </FormControl>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -247,7 +253,7 @@ export default function SignUp() {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -266,7 +272,7 @@ export default function SignUp() {
                       {...field}
                     />
                   </FormControl>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -282,7 +288,7 @@ export default function SignUp() {
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -298,7 +304,7 @@ export default function SignUp() {
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -321,7 +327,7 @@ export default function SignUp() {
                   <FormDescription>
                     이용약관 및 개인정보 처리방침에 동의합니다.
                   </FormDescription>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -352,7 +358,7 @@ export default function SignUp() {
                   <FormDescription>
                     프로필 이미지를 업로드해주세요
                   </FormDescription>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                   {/* ✅ 미리보기 박스 추가 */}
@@ -387,7 +393,7 @@ export default function SignUp() {
                     />
                   </FormControl>
                   <FormDescription>앉은 자리를 선택해주세요</FormDescription>
-                  <div className="min-h-[20px]">
+                  <div className="min-h-[12px]">
                     <FormMessage />
                   </div>
                 </FormItem>
