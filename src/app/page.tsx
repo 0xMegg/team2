@@ -1,6 +1,6 @@
 "use client";
 
-import EggBackground from "@/components/eggBackGround";
+import EggBackground from "@/components/eggBackground";
 import SeatsTable from "@/components/seatsTable";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";

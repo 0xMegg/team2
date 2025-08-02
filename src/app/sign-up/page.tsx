@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
-import EggBackground from "@/components/eggBackGround";
+import EggBackground from "@/components/eggBackground";
 
 interface SeatData {
   id: number;

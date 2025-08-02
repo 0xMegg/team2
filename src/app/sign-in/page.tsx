@@ -32,7 +32,7 @@ import {
 
 import { toast } from "sonner";
 import Link from "next/link";
-import EggBackground from "@/components/eggBackGround";
+import EggBackground from "@/components/eggBackground";
 import { useAuthStore } from "@/stores/auth";
 import { GuestGuard } from "@/components/auth-guard";
 
