@@ -39,9 +39,8 @@ export default function Home() {
         <div className="w-full max-w-6xl mx-auto">
           <div className="flex flex-col justify-center items-center gap-4">
             <div className="flex items-center gap-3">
-              <Image src="/hancom.svg" alt="logo" width={160} height={160} />
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-yellow-800">
-                AI 아카데미 2기
+                스나컴즈 2기
               </h1>
             </div>
             <SeatsTable

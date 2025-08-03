@@ -44,20 +44,47 @@ export default function EggBackground() {
     positions.push(generatePosition());
   }
 
+  // 이미지 소스 결정 함수
+  const getImageSource = (index: number): string => {
+    if (index === 0) return "/hancom.svg";
+    if (index === 1) return "/sniper.svg";
+    return "/favicon.png";
+  };
+
+  // 이미지 alt 텍스트 결정 함수
+  const getImageAlt = (index: number): string => {
+    if (index === 0) return "한글 로고";
+    if (index === 1) return "스나이퍼 로고";
+    return `계란${index}`;
+  };
+
+  // 이미지 크기 결정 함수
+  const getImageSize = (index: number, random: number): string => {
+    if (index === 0) {
+      // hancom.svg는 더 크게
+      return random < 0.5 ? "w-20" : "w-24";
+    }
+    if (index === 1) {
+      // sniper.svg는 더 크게
+      return random < 0.5 ? "w-28" : "w-32";
+    }
+    return random < 0.5 ? "w-8" : "w-12"; // 나머지는 기존 크기
+  };
+
   return (
     <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
       {positions.map((pos, index) => {
         const random = Math.random(); // 한 번만 랜덤 값 생성
-        const size = random < 0.5 ? 8 : 12;
+        const size = getImageSize(index, random);
         const rotation = random * 360;
         const blur = random * 0.5;
 
         return (
           <img
             key={index}
-            src="/favicon.png"
-            alt={`계란${index}`}
-            className={`absolute w-${size} opacity-[.25] transition-all duration-1000 ease-in-out`}
+            src={getImageSource(index)}
+            alt={getImageAlt(index)}
+            className={`absolute ${size} opacity-[.25] transition-all duration-1000 ease-in-out`}
             style={{
               top: `${pos.top}%`,
               left: `${pos.left}%`,
