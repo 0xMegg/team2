@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { supabase } from "@/utils/client";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,9 +31,7 @@ import {
 
 import { toast } from "sonner";
 import Link from "next/link";
-import EggBackground from "@/components/eggBackground";
 import { useAuthStore } from "@/stores/auth";
-import { GuestGuard } from "@/components/auth-guard";
 
 const formSchema = z.object({
   email: z.email({
@@ -47,10 +45,17 @@ const formSchema = z.object({
 function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuthStore();
+  const { login, isAuthenticated } = useAuthStore();
 
   // URL에서 redirect 파라미터 가져오기
   const redirectPath = searchParams.get("redirect") || "/";
+
+  // 이미 로그인된 상태이고 redirect 파라미터가 있으면 해당 경로로 이동
+  useEffect(() => {
+    if (isAuthenticated && redirectPath !== "/") {
+      router.push(redirectPath);
+    }
+  }, [isAuthenticated, redirectPath, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,44 +114,70 @@ function SignInContent() {
   };
 
   return (
-    <div className="flex flex-1 flex-col w-full min-h-[calc(100vh-216px)] items-center justify-center bg-[#ffd90066]">
-      <EggBackground />
-      <Card className="relative w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
-        <div className="relative z-10">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-yellow-600">
-              로그인
-            </CardTitle>
-            <CardDescription className="text-sm pb-2 text-gray-500">
-              로그인을 위한 정보를 입력해주세요.
-            </CardDescription>
-            <CardAction>
-              <Button
-                variant="link"
-                className="!no-underline transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
-                onClick={() => router.push("/sign-up")}
-              >
-                회원가입
-              </Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-3"
-              >
-                <div className="flex flex-col gap-6">
-                  <div className="grid gap-2">
+    <div className="h-[calc(100vh-120px)] bg-[#ffd90066] flex flex-col">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <Card className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg rounded-3xl shadow-xl overflow-hidden">
+          <div className="relative z-10">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-yellow-600">
+                로그인
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base pb-2 text-gray-500">
+                로그인을 위한 정보를 입력해주세요.
+              </CardDescription>
+              <CardAction>
+                <Button
+                  variant="link"
+                  className="!no-underline transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
+                  onClick={() => router.push("/sign-up")}
+                >
+                  회원가입
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="flex flex-col gap-3"
+                >
+                  <div className="flex flex-col gap-6">
+                    <div className="grid gap-2">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="이메일을 입력해주세요"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <FormField
                       control={form.control}
-                      name="email"
+                      name="password"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
+                        <FormItem className="relative">
+                          <div className="w-full flex items-center justify-between">
+                            <FormLabel>Password</FormLabel>
+                            <Link
+                              href={"/sign-in/credentials"}
+                              className="text-sm no-underline"
+                            >
+                              비밀번호를 잊어버리셨나요?
+                            </Link>
+                          </div>
                           <FormControl>
                             <Input
-                              placeholder="이메일을 입력해주세요"
+                              placeholder="비밀번호를 입력해주세요."
+                              type="password"
                               {...field}
                             />
                           </FormControl>
@@ -154,54 +185,27 @@ function SignInContent() {
                         </FormItem>
                       )}
                     />
+                    <Button
+                      type="submit"
+                      className="transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
+                    >
+                      로그인
+                    </Button>
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem className="relative">
-                        <div className="w-full flex items-center justify-between">
-                          <FormLabel>Password</FormLabel>
-                          <Link
-                            href={"/sign-in/credentials"}
-                            className="text-sm no-underline"
-                          >
-                            비밀번호를 잊어버리셨나요?
-                          </Link>
-                        </div>
-                        <FormControl>
-                          <Input
-                            placeholder="비밀번호를 입력해주세요."
-                            type="password"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
-                  >
-                    로그인
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </div>
-      </Card>
+                </form>
+              </Form>
+            </CardContent>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
 
 export default function SignIn() {
   return (
-    <GuestGuard>
-      <Suspense fallback={<div>Loading...</div>}>
-        <SignInContent />
-      </Suspense>
-    </GuestGuard>
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInContent />
+    </Suspense>
   );
 }

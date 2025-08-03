@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🪑 후라이이잉 - 좌석 관리 시스템
 
-## Getting Started
+Next.js와 Supabase를 활용한 실시간 좌석 관리 및 설문조사 플랫폼입니다.
 
-First, run the development server:
+## 🚀 기술 스택
+
+### Frontend
+
+- **Next.js 15** - React 기반 풀스택 프레임워크
+- **TypeScript** - 타입 안전성 보장
+- **Tailwind CSS** - 유틸리티 퍼스트 CSS 프레임워크
+- **Radix UI** - 접근성 고려한 UI 컴포넌트
+- **Zustand** - 상태 관리 라이브러리
+
+### Backend & Database
+
+- **Supabase** - 백엔드리스 플랫폼
+- **PostgreSQL** - 관계형 데이터베이스
+- **Supabase Auth** - 인증 시스템
+- **Supabase Storage** - 파일 저장소
+
+### 개발 도구
+
+- **ESLint** - 코드 품질 관리
+- **PostCSS** - CSS 전처리
+- **Turbopack** - 빠른 개발 서버
+
+## ✨ 주요 기능
+
+### 🪑 좌석 관리
+
+- 실시간 좌석 현황 확인
+- 좌석 선택 및 예약
+- 사용자 프로필 연동
+
+### 👤 사용자 인증
+
+- 이메일/비밀번호 로그인
+- 회원가입 및 프로필 설정
+- 인증 상태 관리
+
+### 📊 설문조사 시스템
+
+- 다양한 질문 유형 지원
+  - 단답형, 서술형
+  - 객관식, 체크박스
+  - 드롭다운, 파일 업로드
+- 실시간 결과 확인
+
+## 🛠️ 설치 및 실행
+
+### 1. 저장소 클론
+
+```bash
+git clone <repository-url>
+cd team2
+```
+
+### 2. 의존성 설치
+
+```bash
+npm install
+```
+
+### 3. 환경변수 설정
+
+`.env.local` 파일을 생성하고 다음 변수들을 설정하세요:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. 개발 서버 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 프로젝트 구조
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # 루트 레이아웃
+│   ├── page.tsx           # 메인 페이지
+│   ├── sign-in/           # 로그인 페이지
+│   └── sign-up/           # 회원가입 페이지
+├── components/             # 재사용 가능한 컴포넌트
+│   ├── ui/                # 기본 UI 컴포넌트
+│   ├── auth-guard.tsx     # 인증 가드
+│   └── seatsTable.tsx     # 좌석 테이블
+├── lib/                   # 유틸리티 함수
+│   ├── constants.ts       # 상수 정의
+│   └── utils.ts           # 유틸리티 함수
+├── stores/                # 상태 관리
+│   └── auth.ts            # 인증 상태 관리
+└── utils/                 # 클라이언트 설정
+    └── client.ts          # Supabase 클라이언트
+```
 
-## Learn More
+## 🔧 개발 가이드
 
-To learn more about Next.js, take a look at the following resources:
+### 코드 스타일
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- TypeScript 엄격 모드 사용
+- ESLint 규칙 준수
+- 컴포넌트별 파일 분리
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 상태 관리
 
-## Deploy on Vercel
+- Zustand를 통한 전역 상태 관리
+- React Hook Form을 통한 폼 관리
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 에러 처리
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 중앙화된 에러 핸들링
+- 사용자 친화적 에러 메시지
+- 개발/프로덕션 환경별 로깅
+
+## 🚀 배포
+
+### Vercel 배포 (권장)
+
+1. GitHub 저장소 연결
+2. 환경변수 설정
+3. 자동 배포 설정
+
+### 수동 배포
+
+```bash
+npm run build
+npm start
+```
+
+## 📝 라이센스
+
+MIT License
+
+## 👥 팀원
+
+- [팀원 1] - Frontend 개발
+- [팀원 2] - Backend 개발
+- [팀원 3] - UI/UX 디자인
+
+---
+
+**개발 기간**: 2024년 7월  
+**프로젝트 유형**: 팀 프로젝트 (포트폴리오용 개선)

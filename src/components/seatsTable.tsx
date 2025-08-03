@@ -3,6 +3,7 @@ import { Card } from "./ui/card";
 import { useRouter } from "next/navigation";
 import { getRandomSeatTitle } from "@/lib/constants";
 import { supabase } from "@/utils/client";
+import { useAuthStore } from "@/stores/auth";
 
 interface SeatData {
   id: number;
@@ -29,6 +30,7 @@ export default function SeatsTable({
   selectedSeat,
 }: SeatsTableProps) {
   const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const rowNumbers = [0, 1, 2, 3, 4];
 
   // 회원가입 페이지에서는 seat prop을 사용, 랜딩 페이지에서는 selectedSeat prop을 사용
@@ -57,6 +59,10 @@ export default function SeatsTable({
     // 랜딩 페이지에서 사용하는 경우
     if (!onSeatChange) {
       if (!seatData || !seatData.seat) {
+        // 로그인된 상태에서 빈 좌석을 클릭한 경우 아무것도 하지 않음
+        if (isAuthenticated) {
+          return;
+        }
         // 사용자 데이터가 없는 좌석을 클릭했을 때 sign-up 페이지로 이동
         router.push(`/sign-up?seat=${seatNumber}`);
       } else {
@@ -165,6 +171,11 @@ export default function SeatsTable({
     // 이미 가입된 좌석인 경우 (회원가입 페이지에서만 회색 배경 적용)
     if (seatData && seatData.seat && onSeatChange) {
       return `${baseStyle} bg-gray-300 cursor-not-allowed`;
+    }
+
+    // 로그인된 상태에서 빈 좌석인 경우 커서 스타일만 변경하고 hover 효과는 유지
+    if (!onSeatChange && isAuthenticated && (!seatData || !seatData.seat)) {
+      return `${baseStyle} hover:bg-yellow-200 cursor-default`;
     }
 
     if (currentSelectedSeat === seatNumber) {

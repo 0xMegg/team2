@@ -5,6 +5,7 @@ import SeatsTable from "@/components/seatsTable";
 import { supabase } from "../../utils/client";
 import { useEffect } from "react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface SeatData {
   id: number;
@@ -33,14 +34,23 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-w-100 min-h-100 bg-[#ffd90066]">
-      <div className="p-4 flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold mb-4 text-center">좌석 현황</h1>
-        <SeatsTable
-          seatsData={seatsData}
-          selectedSeat={undefined}
-          onSeatChange={undefined}
-        />
+    <div className="h-[calc(100vh-120px)] bg-[#ffd90066] flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="w-full max-w-6xl mx-auto">
+          <div className="flex flex-col justify-center items-center gap-4">
+            <div className="flex items-center gap-3">
+              <Image src="/hancom.svg" alt="logo" width={160} height={160} />
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-yellow-800">
+                AI 아카데미 2기
+              </h1>
+            </div>
+            <SeatsTable
+              seatsData={seatsData}
+              selectedSeat={undefined}
+              onSeatChange={undefined}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

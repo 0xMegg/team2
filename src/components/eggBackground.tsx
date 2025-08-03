@@ -1,5 +1,5 @@
 export default function EggBackground() {
-  const total = 10; // 총 이미지 개수
+  const total = 20; // 총 이미지 개수
   const positions: Array<{ top: number; left: number }> = [];
 
   // 겹치지 않도록 위치를 생성하는 함수
