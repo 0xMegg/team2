@@ -1,11 +1,9 @@
 "use client";
 
-import EggBackground from "@/components/eggBackground";
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "../../utils/client";
 import { useEffect } from "react";
 import { useState } from "react";
-import Image from "next/image";
 
 interface SeatData {
   id: number;

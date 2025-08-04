@@ -1,48 +1,61 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
+
 export default function EggBackground() {
+  const pathname = usePathname();
   const total = 20; // 총 이미지 개수
-  const positions: Array<{ top: number; left: number }> = [];
 
-  // 겹치지 않도록 위치를 생성하는 함수
-  const generatePosition = (): { top: number; left: number } => {
-    let attempts = 0;
-    const maxAttempts = 100;
+  // pathname이 바뀔 때마다 새로운 위치 배열을 생성
+  const positions: Array<{ top: number; left: number }> = useMemo(() => {
+    const positionsArray: Array<{ top: number; left: number }> = [];
 
-    while (attempts < maxAttempts) {
-      const top = Math.random() * 100; // 0% ~ 100% 범위로 확장
-      const left = Math.random() * 100; // 0% ~ 100% 범위로 확장
+    // 겹치지 않도록 위치를 생성하는 함수
+    const generatePosition = (): { top: number; left: number } => {
+      let attempts = 0;
+      const maxAttempts = 100;
 
-      // 기존 위치들과의 거리 확인
-      const minDistance = 15; // 최소 거리
-      let isValid = true;
+      while (attempts < maxAttempts) {
+        const top = Math.random() * 100; // 0% ~ 100% 범위로 확장
+        const left = Math.random() * 100; // 0% ~ 100% 범위로 확장
 
-      for (const pos of positions) {
-        const distance = Math.sqrt(
-          Math.pow(top - pos.top, 2) + Math.pow(left - pos.left, 2)
-        );
-        if (distance < minDistance) {
-          isValid = false;
-          break;
+        // 기존 위치들과의 거리 확인
+        const minDistance = 15; // 최소 거리
+        let isValid = true;
+
+        for (const existingPos of positionsArray) {
+          const distance = Math.sqrt(
+            Math.pow(top - existingPos.top, 2) +
+              Math.pow(left - existingPos.left, 2)
+          );
+          if (distance < minDistance) {
+            isValid = false;
+            break;
+          }
         }
+
+        if (isValid) {
+          return { top, left };
+        }
+
+        attempts++;
       }
 
-      if (isValid) {
-        return { top, left };
-      }
+      // 최대 시도 횟수를 초과하면 랜덤 위치 반환
+      return {
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+      };
+    };
 
-      attempts++;
+    // 위치 배열 생성
+    for (let i = 0; i < total; i++) {
+      positionsArray.push(generatePosition());
     }
 
-    // 최대 시도 횟수를 초과하면 랜덤 위치 반환
-    return {
-      top: Math.random() * 100,
-      left: Math.random() * 100,
-    };
-  };
-
-  // 위치 배열 생성
-  for (let i = 0; i < total; i++) {
-    positions.push(generatePosition());
-  }
+    return positionsArray;
+  }, [pathname]); // pathname이 바뀔 때마다 재계산
 
   // 이미지 소스 결정 함수
   const getImageSource = (index: number): string => {
@@ -81,7 +94,7 @@ export default function EggBackground() {
 
         return (
           <img
-            key={index}
+            key={index} // key를 다시 index로 변경하여 애니메이션 유지
             src={getImageSource(index)}
             alt={getImageAlt(index)}
             className={`absolute ${size} opacity-[.25] transition-all duration-1000 ease-in-out`}

@@ -22,7 +22,6 @@ import { toast } from "sonner";
 
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
-import EggBackground from "@/components/eggBackground";
 
 interface SeatData {
   id: number;
@@ -239,7 +238,6 @@ function SignUpContent() {
   return (
     <Form {...form}>
       <div className="h-[calc(100vh-120px)] flex items-center justify-center bg-[#ffd90066] px-4">
-        <EggBackground />
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-4xl mx-auto p-6 bg-white flex flex-col md:flex-row gap-6"
