@@ -65,7 +65,6 @@ const formSchema = z
 function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [thumbnail, setThumbnail] = useState<string | File | null>(null); // 썸네일은 파일 업로드를 통해 설정할 수 있습니다. 임시 저장 같은 경우에는 null일 수 있습니다.
   const [seatsData, setSeatsData] = useState<SeatData[]>([]);
 
   // URL에서 좌석 정보 가져오기
@@ -159,7 +158,7 @@ function SignUpContent() {
           const fileExt = values.profileImage.name.split(".").pop();
           const filePath = `profile-images/${user.id}/${Date.now()}.${fileExt}`;
 
-          const { data: imageData, error: imageError } = await supabase.storage
+          const { error: imageError } = await supabase.storage
             .from("files")
             .upload(filePath, values.profileImage, {
               cacheControl: "3600",
@@ -370,7 +369,6 @@ function SignUpContent() {
                           field.onChange(file); // 파일 객체 자체를 저장
                           const url = URL.createObjectURL(file); // 미리보기용 URL 생성
                           setPreviewUrl(url); // 상태 저장
-                          setThumbnail(file);
                         }
                       }}
                     />

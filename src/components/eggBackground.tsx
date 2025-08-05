@@ -1,11 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Image from "next/image";
 
 export default function EggBackground() {
-  const pathname = usePathname();
   const total = 20; // 총 이미지 개수
 
   // pathname이 바뀔 때마다 새로운 위치 배열을 생성
@@ -56,7 +54,7 @@ export default function EggBackground() {
     }
 
     return positionsArray;
-  }, [pathname]); // pathname이 바뀔 때마다 재계산
+  }, []); // pathname 의존성 제거
 
   // 이미지 소스 결정 함수
   const getImageSource = (index: number): string => {

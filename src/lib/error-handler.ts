@@ -6,6 +6,11 @@ export interface AppError {
   details?: unknown;
 }
 
+interface ErrorWithMessage {
+  message: string;
+  name?: string;
+}
+
 export class ErrorHandler {
   static handle(error: unknown, context: string = "알 수 없는 오류"): AppError {
     const appError: AppError = {
@@ -19,9 +24,10 @@ export class ErrorHandler {
       typeof error === "object" &&
       error !== null &&
       "message" in error &&
-      typeof (error as any).message === "string"
+      typeof (error as ErrorWithMessage).message === "string"
     ) {
-      switch ((error as any).message) {
+      const errorWithMessage = error as ErrorWithMessage;
+      switch (errorWithMessage.message) {
         case "Invalid login credentials":
           appError.code = "AUTH_INVALID_CREDENTIALS";
           appError.message = "이메일 또는 비밀번호가 올바르지 않습니다.";
@@ -45,12 +51,17 @@ export class ErrorHandler {
             "너무 많은 요청이 있었습니다. 잠시 후 다시 시도해주세요.";
           break;
         default:
-          appError.message = `${context}: ${(error as any).message}`;
+          appError.message = `${context}: ${errorWithMessage.message}`;
       }
     }
 
     // 네트워크 에러 처리
-    if (error?.name === "NetworkError") {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "name" in error &&
+      (error as ErrorWithMessage).name === "NetworkError"
+    ) {
       appError.code = "NETWORK_ERROR";
       appError.message = "네트워크 연결을 확인해주세요.";
     }

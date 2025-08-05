@@ -21,7 +21,7 @@ export default function CheckboxOptions({ value, onChange }: Props) {
 
   useEffect(() => {
     onChange(options);
-  }, [onChange]);
+  }, [onChange, options]);
 
   const updateLabel = (index: number, newLabel: string) => {
     const updated = [...options];

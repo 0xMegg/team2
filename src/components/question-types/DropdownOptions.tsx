@@ -17,7 +17,7 @@ export default function DropdownOptions({ value, onChange }: Props) {
   // options 상태 변경될 때마다 부모에 전달
   useEffect(() => {
     onChange(options);
-  }, [options]);
+  }, [onChange, options]);
 
   const handleChange = (index: number, val: string) => {
     const updated = [...options];
