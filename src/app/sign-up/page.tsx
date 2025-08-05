@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
+import Image from "next/image";
 
 interface SeatData {
   id: number;
@@ -383,10 +384,12 @@ function SignUpContent() {
                   {/* ✅ 미리보기 박스 추가 */}
                   {previewUrl && (
                     <div className="mt-4 w-32 h-32 border rounded-md overflow-hidden">
-                      <img
+                      <Image
                         src={previewUrl}
                         alt="프로필 미리보기"
                         className="object-cover w-full h-full"
+                        width={128}
+                        height={128}
                       />
                     </div>
                   )}

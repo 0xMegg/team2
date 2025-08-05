@@ -24,7 +24,7 @@ export default function SeatCard({
   isSignUpMode = false,
 }: SeatCardProps) {
   const getCardStyle = () => {
-    let baseStyle =
+    const baseStyle =
       "w-20 h-20 text-center flex flex-col items-center justify-center rounded-none";
 
     if (isDisabled) {

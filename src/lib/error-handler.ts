@@ -3,11 +3,11 @@ import { toast } from "sonner";
 export interface AppError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 export class ErrorHandler {
-  static handle(error: any, context: string = "알 수 없는 오류"): AppError {
+  static handle(error: unknown, context: string = "알 수 없는 오류"): AppError {
     const appError: AppError = {
       code: "UNKNOWN_ERROR",
       message: "예상치 못한 오류가 발생했습니다.",

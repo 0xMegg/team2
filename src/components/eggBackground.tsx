@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import Image from "next/image";
 
 export default function EggBackground() {
   const pathname = usePathname();
@@ -93,8 +94,8 @@ export default function EggBackground() {
         const blur = random * 0.5;
 
         return (
-          <img
-            key={index} // key를 다시 index로 변경하여 애니메이션 유지
+          <Image
+            key={index}
             src={getImageSource(index)}
             alt={getImageAlt(index)}
             className={`absolute ${size} opacity-[.25] transition-all duration-1000 ease-in-out`}
@@ -104,6 +105,8 @@ export default function EggBackground() {
               transform: `rotate(${rotation}deg)`,
               filter: `blur(${blur}px)`,
             }}
+            width={index === 0 ? 96 : index === 1 ? 128 : 32}
+            height={index === 0 ? 96 : index === 1 ? 128 : 32}
           />
         );
       })}

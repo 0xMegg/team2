@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import { supabase } from "@/utils/client";
 import { useRouter, useSearchParams } from "next/navigation";
