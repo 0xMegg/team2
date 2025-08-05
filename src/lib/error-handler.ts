@@ -15,8 +15,13 @@ export class ErrorHandler {
     };
 
     // Supabase 에러 처리
-    if (error?.message) {
-      switch (error.message) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (error as any).message === "string"
+    ) {
+      switch ((error as any).message) {
         case "Invalid login credentials":
           appError.code = "AUTH_INVALID_CREDENTIALS";
           appError.message = "이메일 또는 비밀번호가 올바르지 않습니다.";
@@ -40,7 +45,7 @@ export class ErrorHandler {
             "너무 많은 요청이 있었습니다. 잠시 후 다시 시도해주세요.";
           break;
         default:
-          appError.message = `${context}: ${error.message}`;
+          appError.message = `${context}: ${(error as any).message}`;
       }
     }
 
