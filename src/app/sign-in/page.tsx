@@ -119,7 +119,7 @@ function SignInContent() {
       <EggBackground />
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
         <Card className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg rounded-3xl shadow-xl overflow-hidden">
-          <div className="relative z-10">
+          <div className="relative">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl sm:text-3xl font-bold text-yellow-600">
                 로그인

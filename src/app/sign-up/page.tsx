@@ -243,7 +243,7 @@ function SignUpContent() {
         <EggBackground />
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full max-w-4xl mx-auto p-6 bg-white flex flex-col md:flex-row gap-6"
+          className="w-full max-w-4xl mx-auto p-6 bg-white flex flex-col md:flex-row gap-6 relative z-10"
         >
           {/* 이메일 입력 */}
           <div className="w-80 md:w-1/2 flex flex-col gap-1">
