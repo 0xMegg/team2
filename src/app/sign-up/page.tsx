@@ -7,6 +7,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import EggBackground from "@/components/eggBackground";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -23,6 +24,7 @@ import { toast } from "sonner";
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
 import Image from "next/image";
+import TermsDialog from "@/components/TermsDialog";
 
 interface SeatData {
   id: number;
@@ -237,7 +239,8 @@ function SignUpContent() {
 
   return (
     <Form {...form}>
-      <div className="h-[calc(100vh-120px)] flex items-center justify-center bg-[#ffd90066] px-4">
+      <div className="h-[calc(100vh-120px)] flex items-center justify-center bg-[#ffd90066] px-4 relative">
+        <EggBackground />
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-4xl mx-auto p-6 bg-white flex flex-col md:flex-row gap-6"
@@ -337,14 +340,20 @@ function SignUpContent() {
                 <FormItem>
                   <FormLabel>이용약관 동의</FormLabel>
                   <FormControl>
-                    <Checkbox
-                      id="terms"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="terms"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <TermsDialog
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
                   <FormDescription>
-                    이용약관 및 개인정보 처리방침에 동의합니다.
+                    이용약관 및 개인정보 처리방침에 동의해야 합니다.
                   </FormDescription>
                   <div className="min-h-[12px]">
                     <FormMessage />

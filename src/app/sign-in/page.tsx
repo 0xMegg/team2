@@ -32,6 +32,7 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
+import EggBackground from "@/components/eggBackground";
 
 const formSchema = z.object({
   email: z.email({
@@ -114,8 +115,9 @@ function SignInContent() {
   };
 
   return (
-    <div className="h-[calc(100vh-120px)] bg-[#ffd90066] flex flex-col">
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="h-[calc(100vh-120px)] bg-[#ffd90066] flex flex-col relative">
+      <EggBackground />
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
         <Card className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg rounded-3xl shadow-xl overflow-hidden">
           <div className="relative z-10">
             <CardHeader className="text-center">

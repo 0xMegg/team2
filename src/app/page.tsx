@@ -4,6 +4,7 @@ import SeatsTable from "@/components/seatsTable";
 import { supabase } from "../../utils/client";
 import { useEffect } from "react";
 import { useState } from "react";
+import EggBackground from "@/components/eggBackground";
 
 interface SeatData {
   id: number;
@@ -32,8 +33,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-120px)] bg-[#ffd90066] flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="h-[calc(100vh-120px)] bg-[#ffd90066] flex flex-col relative">
+      <EggBackground />
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
         <div className="w-full max-w-6xl mx-auto">
           <div className="flex flex-col justify-center items-center gap-4">
             <div className="flex items-center gap-3">
