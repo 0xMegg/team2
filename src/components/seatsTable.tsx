@@ -32,13 +32,14 @@ export default function SeatsTable({
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const rowNumbers = [0, 1, 2, 3, 4];
+  const errorSeat = 4;
 
   // 회원가입 페이지에서는 seat prop을 사용, 랜딩 페이지에서는 selectedSeat prop을 사용
   const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
 
   const onClick = async (seatNumber: number) => {
     // 4번 좌석은 클릭 불가
-    if (seatNumber === 4) {
+    if (seatNumber === errorSeat) {
       return;
     }
 
@@ -59,112 +60,97 @@ export default function SeatsTable({
     // 랜딩 페이지에서 사용하는 경우
     if (!onSeatChange) {
       if (!seatData || !seatData.seat) {
-        // 로그인된 상태에서 빈 좌석을 클릭한 경우 아무것도 하지 않음
+        // 빈 좌석 클릭
         if (isAuthenticated) {
+          // 로그인된 상태에서 빈 좌석 클릭 시 동작 없음
           return;
+        } else {
+          // 로그인되지 않은 상태에서 빈 좌석 클릭 시 sign-in 페이지로 이동
+          router.push(`/sign-in?redirect=/result/${seatNumber}`);
         }
-        // 사용자 데이터가 없는 좌석을 클릭했을 때 sign-up 페이지로 이동
-        router.push(`/sign-up?seat=${seatNumber}`);
       } else {
-        // 사용자 데이터가 있는 좌석을 클릭했을 때
-        try {
-          // 현재 로그인된 사용자 정보 가져오기
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
+        // 데이터가 있는 좌석 클릭
+        if (isAuthenticated) {
+          // 로그인된 상태
+          try {
+            // 현재 로그인된 사용자 정보 가져오기
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
 
-          if (!user) {
-            // 로그인되지 않은 경우 sign-in 페이지로 이동하되, 로그인 후 /result/${seatNumber}로 이동하도록 쿼리 파라미터 추가
-            router.push(`/sign-in?redirect=/result/${seatNumber}`);
-            return;
-          }
-
-          // 해당 좌석의 사용자 ID 가져오기
-          const { data: seatUserData, error: seatError } = await supabase
-            .from("userInfo")
-            .select("id")
-            .eq("seat", seatNumber)
-            .single();
-
-          if (seatError || !seatUserData) {
-            console.error("좌석 정보를 찾을 수 없습니다:", seatError);
-            return;
-          }
-
-          // 해당 좌석이 현재 사용자의 좌석인지 확인
-          if (seatUserData.id === user.id) {
-            // 자신의 테이블인 경우 survey 테이블에서 required 필드 확인
-            const { data: surveyData, error: surveyError } = await supabase
-              .from("survey")
-              .select("questions")
-              .eq("author", user.id)
-              .single();
-
-            if (surveyError || !surveyData) {
-              // survey 데이터가 없거나 오류인 경우 /question으로 이동
-              router.push("/question");
+            if (!user) {
+              console.error("사용자 정보를 찾을 수 없습니다");
               return;
             }
 
-            // questions 배열에서 required 필드 확인
-            const questions = surveyData.questions || [];
-            const hasRequiredQuestions = questions.some(
-              (q: { required?: boolean }) => q.required === true
-            );
+            // 해당 좌석의 사용자 ID 가져오기
+            const { data: seatUserData, error: seatError } = await supabase
+              .from("userInfo")
+              .select("id")
+              .eq("seat", seatNumber)
+              .single();
 
-            if (hasRequiredQuestions) {
-              // required가 true인 질문이 있으면 /result/${seatNumber}로 이동
-              router.push(`/result/${seatNumber}`);
+            if (seatError || !seatUserData) {
+              console.error("좌석 정보를 찾을 수 없습니다:", seatError);
+              return;
+            }
+
+            // 해당 좌석이 현재 사용자의 좌석인지 확인
+            if (seatUserData.id === user.id) {
+              // 내 좌석 클릭 시 내 userInfo에서 url 가져와서 이동
+              await handleUrlNavigation(seatNumber);
             } else {
-              // required가 null이거나 false인 경우 /question으로 이동
-              router.push("/question");
+              // 남의 좌석 클릭 시 해당 유저의 userInfo에서 url 가져와서 이동
+              await handleUrlNavigation(seatNumber);
             }
-          } else {
-            // 다른 사용자의 좌석인 경우 해당 사용자의 url로 이동
-            try {
-              const { data: userInfoData, error: userInfoError } =
-                await supabase
-                  .from("userInfo")
-                  .select("url")
-                  .eq("seat", seatNumber)
-                  .single();
-
-              if (userInfoError || !userInfoData) {
-                console.error("사용자 정보를 찾을 수 없습니다:", userInfoError);
-                // url 정보가 없으면 기본적으로 /result/${seatNumber}로 이동
-                router.push(`/result/${seatNumber}`);
-                return;
-              }
-
-              // url이 있는 경우 해당 URL로 이동
-              if (userInfoData.url) {
-                // 외부 URL인지 확인 (http:// 또는 https://로 시작하는지)
-                if (
-                  userInfoData.url.startsWith("http://") ||
-                  userInfoData.url.startsWith("https://")
-                ) {
-                  // 외부 URL인 경우 새 탭에서 열기
-                  window.open(userInfoData.url, "_blank");
-                } else {
-                  // 내부 경로인 경우 같은 탭에서 이동
-                  router.push(userInfoData.url);
-                }
-              } else {
-                // url이 없는 경우 기본적으로 /result/${seatNumber}로 이동
-                router.push(`/result/${seatNumber}`);
-              }
-            } catch (error) {
-              console.error("URL 정보 가져오기 중 오류 발생:", error);
-              // 오류 발생 시 기본적으로 /result/${seatNumber}로 이동
-              router.push(`/result/${seatNumber}`);
-            }
+          } catch (error) {
+            console.error("좌석 클릭 처리 중 오류 발생:", error);
           }
-        } catch (error) {
-          console.error("좌석 클릭 처리 중 오류 발생:", error);
-          // 오류 발생 시 기본적으로 /result/${seatNumber}로 이동
-          router.push(`/result/${seatNumber}`);
+        } else {
+          // 로그인되지 않은 상태에서 데이터가 있는 좌석 클릭 시 해당 유저의 url로 이동
+          await handleUrlNavigation(seatNumber);
         }
       }
+    }
+  };
+
+  // URL 처리 함수
+  const handleUrlNavigation = async (seatNumber: number) => {
+    try {
+      const { data: userInfoData, error: userInfoError } = await supabase
+        .from("userInfo")
+        .select("url")
+        .eq("seat", seatNumber)
+        .single();
+
+      if (userInfoError || !userInfoData) {
+        console.error("사용자 정보를 찾을 수 없습니다:", userInfoError);
+        // url 정보가 없으면 기본적으로 /result/${seatNumber}로 이동
+        router.push(`/result/${seatNumber}`);
+        return;
+      }
+
+      // url이 있는 경우 해당 URL로 이동
+      if (userInfoData.url) {
+        // 외부 URL인지 확인 (http:// 또는 https://로 시작하는지)
+        if (
+          userInfoData.url.startsWith("http://") ||
+          userInfoData.url.startsWith("https://")
+        ) {
+          // 외부 URL인 경우 새 탭에서 열기
+          window.open(userInfoData.url, "_blank");
+        } else {
+          // 내부 경로인 경우 같은 탭에서 이동
+          router.push(userInfoData.url);
+        }
+      } else {
+        // url이 없는 경우 기본적으로 /result/${seatNumber}로 이동
+        router.push(`/result/${seatNumber}`);
+      }
+    } catch (error) {
+      console.error("URL 정보 가져오기 중 오류 발생:", error);
+      // 오류 발생 시 기본적으로 /result/${seatNumber}로 이동
+      router.push(`/result/${seatNumber}`);
     }
   };
 
