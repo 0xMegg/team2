@@ -69,7 +69,7 @@ export default function SeatsTable({
           return;
         } else {
           // 로그인되지 않은 상태에서 빈 좌석 클릭 시 sign-in 페이지로 이동
-          router.push(`/sign-in?redirect=/result/${seatNumber}`);
+          router.push(`/sign-in`);
         }
       } else {
         // 데이터가 있는 좌석 클릭
@@ -128,8 +128,6 @@ export default function SeatsTable({
 
       if (userInfoError || !userInfoData) {
         console.error("사용자 정보를 찾을 수 없습니다:", userInfoError);
-        // url 정보가 없으면 기본적으로 /result/${seatNumber}로 이동
-        router.push(`/result/${seatNumber}`);
         return;
       }
 
@@ -147,13 +145,11 @@ export default function SeatsTable({
           router.push(userInfoData.url);
         }
       } else {
-        // url이 없는 경우 기본적으로 /result/${seatNumber}로 이동
-        router.push(`/result/${seatNumber}`);
+        // url이 없는 경우 아무 동작 안함
+        return;
       }
     } catch (error) {
       console.error("URL 정보 가져오기 중 오류 발생:", error);
-      // 오류 발생 시 기본적으로 /result/${seatNumber}로 이동
-      router.push(`/result/${seatNumber}`);
     }
   };
 
