@@ -45,6 +45,13 @@ const formSchema = z
     title: z.string().max(5, {
       message: "칭호는 최대 5자 이하이어야 합니다.",
     }),
+    sharedUrl: z
+      .string()
+      .url({
+        message: "유효한 URL을 입력해주세요.",
+      })
+      .optional()
+      .or(z.literal("")),
     password: z.string().min(6, {
       message: "비밀번호는 최소 6자 이상이어야 합니다.",
     }),
@@ -80,6 +87,7 @@ function SignUpContent() {
       email: "",
       username: "",
       title: "",
+      sharedUrl: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -122,6 +130,7 @@ function SignUpContent() {
           data: {
             username: values.username,
             title: values.title,
+            sharedUrl: values.sharedUrl,
             terms: values.terms,
             seat: values.seat,
           },
@@ -294,6 +303,23 @@ function SignUpContent() {
                       {...field}
                     />
                   </FormControl>
+                  <div className="min-h-[12px]">
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+            {/* 공유하고 싶은 URL 입력 */}
+            <FormField
+              control={form.control}
+              name="sharedUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>공유하고 싶은 URL</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
                   <div className="min-h-[12px]">
                     <FormMessage />
                   </div>

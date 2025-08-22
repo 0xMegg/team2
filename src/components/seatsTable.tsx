@@ -120,8 +120,44 @@ export default function SeatsTable({
               router.push("/question");
             }
           } else {
-            // 다른 사용자의 좌석인 경우 /result/${seatNumber}로 이동
-            router.push(`/result/${seatNumber}`);
+            // 다른 사용자의 좌석인 경우 해당 사용자의 url로 이동
+            try {
+              const { data: userInfoData, error: userInfoError } =
+                await supabase
+                  .from("userInfo")
+                  .select("url")
+                  .eq("seat", seatNumber)
+                  .single();
+
+              if (userInfoError || !userInfoData) {
+                console.error("사용자 정보를 찾을 수 없습니다:", userInfoError);
+                // url 정보가 없으면 기본적으로 /result/${seatNumber}로 이동
+                router.push(`/result/${seatNumber}`);
+                return;
+              }
+
+              // url이 있는 경우 해당 URL로 이동
+              if (userInfoData.url) {
+                // 외부 URL인지 확인 (http:// 또는 https://로 시작하는지)
+                if (
+                  userInfoData.url.startsWith("http://") ||
+                  userInfoData.url.startsWith("https://")
+                ) {
+                  // 외부 URL인 경우 새 탭에서 열기
+                  window.open(userInfoData.url, "_blank");
+                } else {
+                  // 내부 경로인 경우 같은 탭에서 이동
+                  router.push(userInfoData.url);
+                }
+              } else {
+                // url이 없는 경우 기본적으로 /result/${seatNumber}로 이동
+                router.push(`/result/${seatNumber}`);
+              }
+            } catch (error) {
+              console.error("URL 정보 가져오기 중 오류 발생:", error);
+              // 오류 발생 시 기본적으로 /result/${seatNumber}로 이동
+              router.push(`/result/${seatNumber}`);
+            }
           }
         } catch (error) {
           console.error("좌석 클릭 처리 중 오류 발생:", error);

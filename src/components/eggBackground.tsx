@@ -66,13 +66,6 @@ const IMAGE_CONFIGS: Record<number, ImageConfig> = {
     baseHeight: 48,
     sizeClasses: ["w-12", "w-16"],
   },
-  3: {
-    src: "https://novaprotocol.net/profile.png",
-    alt: "김태현 깃허브 프로필",
-    baseWidth: 48,
-    baseHeight: 48,
-    sizeClasses: ["w-12", "w-16"],
-  },
 };
 
 const DEFAULT_IMAGE_CONFIG: ImageConfig = {
