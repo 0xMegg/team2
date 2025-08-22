@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import EggBackground from "@/components/eggBackground";
@@ -78,7 +78,7 @@ function ProfileEditContent() {
   });
 
   // 기존 좌석 데이터 가져오기
-  async function readSeatsData() {
+  const readSeatsData = useCallback(async () => {
     const { data: seats, error } = await supabase.from("userInfo").select("*");
     if (error) {
       console.error("Error reading seats:", error);
@@ -86,10 +86,10 @@ function ProfileEditContent() {
       console.log("seats:", seats);
       setSeatsData(seats || []);
     }
-  }
+  }, []);
 
   // 사용자 정보 가져오기
-  async function loadUserData() {
+  const loadUserData = useCallback(async () => {
     if (!user) {
       return;
     }
@@ -125,13 +125,13 @@ function ProfileEditContent() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [user, form]);
 
   // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
     readSeatsData();
     loadUserData();
-  }, []);
+  }, [loadUserData, readSeatsData]);
 
   // 제출 핸들러
   const onSubmit = async (values: z.infer<typeof formSchema>) => {

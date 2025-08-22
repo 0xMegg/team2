@@ -134,7 +134,7 @@ export default function EggBackground() {
     }
 
     return positionsArray;
-  }, [animationKey]);
+  }, []);
 
   // 이미지 상태 생성
   const imageStates = useMemo(() => {
@@ -166,7 +166,7 @@ export default function EggBackground() {
     }
 
     return newStates;
-  }, [animationKey, positions]);
+  }, [positions]);
 
   // 이미지 렌더링 함수
   const renderImage = (imageState: ImageState, index: number) => {

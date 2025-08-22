@@ -15,7 +15,7 @@ const MultipleChoiceOptions = ({ value, onChange }: Props) => {
   // 내부 상태가 바뀔 때마다 부모 컴포넌트에 전달
   useEffect(() => {
     onChange(options);
-  }, [onChange]);
+  }, [onChange, options]);
 
   const handleOptionChange = (index: number, newValue: string) => {
     const newOptions = [...options];
