@@ -68,8 +68,8 @@ export default function SeatsTable({
           // 로그인된 상태에서 빈 좌석 클릭 시 동작 없음
           return;
         } else {
-          // 로그인되지 않은 상태에서 빈 좌석 클릭 시 sign-in 페이지로 이동
-          router.push(`/sign-in`);
+          // 로그인되지 않은 상태에서 빈 좌석 클릭 시 sign-up 페이지로 이동 (좌석번호 포함)
+          router.push(`/sign-up?seat=${seatNumber}`);
         }
       } else {
         // 데이터가 있는 좌석 클릭

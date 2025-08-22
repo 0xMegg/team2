@@ -110,7 +110,12 @@ function SignUpContent() {
   // URL에서 좌석 정보가 변경되면 폼 업데이트
   useEffect(() => {
     if (seatFromUrl) {
-      form.setValue("seat", parseInt(seatFromUrl));
+      const seatNumber = parseInt(seatFromUrl);
+      if (seatNumber > 0 && seatNumber <= 30) {
+        // 유효한 좌석번호 범위 확인
+        form.setValue("seat", seatNumber);
+        console.log("URL에서 좌석번호를 읽어서 설정:", seatNumber);
+      }
     }
   }, [seatFromUrl, form]);
 
@@ -134,6 +139,7 @@ function SignUpContent() {
             terms: values.terms,
             seat: values.seat,
           },
+          emailRedirectTo: `${window.location.origin}/sign-in`,
         },
       });
 
