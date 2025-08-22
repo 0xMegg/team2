@@ -33,13 +33,14 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
 import EggBackground from "@/components/eggBackground";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.email({
     message: "올바른 형식의 이메일 주소를 입력해주세요.",
   }),
-  password: z.string().min(8, {
-    message: "비밀번호는 최소 8자 이상이어야 합니다.",
+  password: z.string().min(6, {
+    message: "비밀번호는 최소 6자 이상이어야 합니다.",
   }),
 });
 
@@ -47,6 +48,7 @@ function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated } = useAuthStore();
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
 
   // URL에서 redirect 파라미터 가져오기
   const redirectPath = searchParams.get("redirect") || "/";
@@ -96,6 +98,14 @@ function SignInContent() {
         toast.error(errorMessage);
         console.error("로그인 에러:", error);
       } else if (!error && data.user && data.session) {
+        // 이메일 인증 상태 확인
+        if (!data.user.email_confirmed_at) {
+          toast.error(
+            "이메일 인증이 완료되지 않았습니다. 이메일을 확인해주세요."
+          );
+          return;
+        }
+
         // Zustand 스토어에 사용자 정보와 토큰 저장
         const user = {
           id: data.user.id,
@@ -111,6 +121,30 @@ function SignInContent() {
     } catch (error) {
       console.error("로그인 중 예상치 못한 오류:", error);
       toast.error("로그인 중 예상치 못한 오류가 발생했습니다.");
+    }
+  };
+
+  // 이메일 인증 재전송 함수
+  const resendVerificationEmail = async (email: string) => {
+    setIsResendingEmail(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: email,
+      });
+
+      if (error) {
+        toast.error(`이메일 재전송 실패: ${error.message}`);
+      } else {
+        toast.success(
+          "인증 이메일을 다시 전송했습니다. 이메일을 확인해주세요. 📧"
+        );
+      }
+    } catch (error) {
+      console.error("이메일 재전송 중 오류:", error);
+      toast.error("이메일 재전송 중 오류가 발생했습니다.");
+    } finally {
+      setIsResendingEmail(false);
     }
   };
 
@@ -187,6 +221,21 @@ function SignInContent() {
                         </FormItem>
                       )}
                     />
+                    {/* 이메일 인증 재전송 버튼 */}
+                    <div className="text-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isResendingEmail}
+                        onClick={() =>
+                          resendVerificationEmail(form.getValues("email"))
+                        }
+                        className="text-xs text-gray-600 hover:text-yellow-600 transition-colors"
+                      >
+                        {isResendingEmail ? "전송 중..." : "인증 이메일 재전송"}
+                      </Button>
+                    </div>
                     <Button
                       type="submit"
                       className="transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
