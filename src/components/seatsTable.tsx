@@ -22,23 +22,26 @@ interface SeatsTableProps {
   // 랜딩 페이지용 props (새로운)
   seatsData?: SeatData[];
   selectedSeat?: number;
+
+  // 회원 정보 수정 페이지용 props (새로운)
+  isEditMode?: boolean;
 }
 export default function SeatsTable({
   seat,
   onSeatChange,
   seatsData = [],
   selectedSeat,
+  isEditMode = false,
 }: SeatsTableProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const rowNumbers = [0, 1, 2, 3, 4];
-  const errorSeat = 4;
+  const errorSeat = 1;
 
   // 회원가입 페이지에서는 seat prop을 사용, 랜딩 페이지에서는 selectedSeat prop을 사용
   const currentSelectedSeat = selectedSeat !== undefined ? selectedSeat : seat;
 
   const onClick = async (seatNumber: number) => {
-    // 4번 좌석은 클릭 불가
     if (seatNumber === errorSeat) {
       return;
     }
@@ -46,8 +49,8 @@ export default function SeatsTable({
     // 이미 가입된 좌석인지 확인
     const seatData = getSeatData(seatNumber);
 
-    // 회원가입 페이지에서만 이미 가입된 좌석 선택 불가
-    if (onSeatChange && seatData && seatData.seat) {
+    // 회원가입 페이지에서만 이미 가입된 좌석 선택 불가 (회원 정보 수정 모드에서는 허용)
+    if (onSeatChange && !isEditMode && seatData && seatData.seat) {
       // 이미 가입된 좌석은 선택 불가
       return;
     }
@@ -155,10 +158,10 @@ export default function SeatsTable({
   };
 
   const getSeatData = (seatNumber: number) => {
-    // 4번 좌석은 특별히 "Error"라는 title을 가진 데이터 반환
-    if (seatNumber === 4) {
+    // errorSeat 좌석은 특별히 "Error"라는 title을 가진 데이터 반환
+    if (seatNumber === errorSeat) {
       return {
-        seat: 4,
+        seat: errorSeat,
         title: "Error",
         userName: "",
         profileImage: null,
@@ -185,13 +188,13 @@ export default function SeatsTable({
       baseStyle += " rounded-r-lg";
     }
 
-    // 4번 좌석은 클릭 불가
-    if (seatNumber === 4) {
+    // errorSeat 좌석은 클릭 불가
+    if (seatNumber === errorSeat) {
       return `${baseStyle} cursor-not-allowed`;
     }
 
-    // 이미 가입된 좌석인 경우 (회원가입 페이지에서만 회색 배경 적용)
-    if (seatData && seatData.seat && onSeatChange) {
+    // 이미 가입된 좌석인 경우 (회원가입 페이지에서만 회색 배경 적용, 회원 정보 수정 모드에서는 허용)
+    if (seatData && seatData.seat && onSeatChange && !isEditMode) {
       return `${baseStyle} bg-gray-300 cursor-not-allowed`;
     }
 
@@ -217,7 +220,7 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 1)}
             >
               {getSeatData(rowNumber * 6 + 1)?.seat &&
-              getSeatData(rowNumber * 6 + 1)?.seat !== 4 ? (
+              getSeatData(rowNumber * 6 + 1)?.seat !== errorSeat ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
@@ -260,7 +263,7 @@ export default function SeatsTable({
                 )
               ) : (
                 <div className="text-xs">
-                  {getSeatData(rowNumber * 6 + 1)?.seat === 4
+                  {getSeatData(rowNumber * 6 + 1)?.seat === errorSeat
                     ? "Error"
                     : rowNumber * 6 + 1}
                 </div>
@@ -271,7 +274,7 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 2)}
             >
               {getSeatData(rowNumber * 6 + 2)?.seat &&
-              getSeatData(rowNumber * 6 + 2)?.seat !== 4 ? (
+              getSeatData(rowNumber * 6 + 2)?.seat !== errorSeat ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
@@ -314,7 +317,7 @@ export default function SeatsTable({
                 )
               ) : (
                 <div className="text-xs">
-                  {getSeatData(rowNumber * 6 + 2)?.seat === 4
+                  {getSeatData(rowNumber * 6 + 2)?.seat === errorSeat
                     ? "Error"
                     : rowNumber * 6 + 2}
                 </div>
@@ -327,7 +330,7 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 3)}
             >
               {getSeatData(rowNumber * 6 + 3)?.seat &&
-              getSeatData(rowNumber * 6 + 3)?.seat !== 4 ? (
+              getSeatData(rowNumber * 6 + 3)?.seat !== errorSeat ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
@@ -370,7 +373,7 @@ export default function SeatsTable({
                 )
               ) : (
                 <div className="text-xs">
-                  {getSeatData(rowNumber * 6 + 3)?.seat === 4
+                  {getSeatData(rowNumber * 6 + 3)?.seat === errorSeat
                     ? "Error"
                     : rowNumber * 6 + 3}
                 </div>
@@ -381,7 +384,7 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 4)}
             >
               {getSeatData(rowNumber * 6 + 4)?.seat &&
-              getSeatData(rowNumber * 6 + 4)?.seat !== 4 ? (
+              getSeatData(rowNumber * 6 + 4)?.seat !== errorSeat ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
@@ -424,7 +427,7 @@ export default function SeatsTable({
                 )
               ) : (
                 <div className="text-xs">
-                  {getSeatData(rowNumber * 6 + 4)?.seat === 4
+                  {getSeatData(rowNumber * 6 + 4)?.seat === errorSeat
                     ? "Error"
                     : rowNumber * 6 + 4}
                 </div>
@@ -437,7 +440,7 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 5)}
             >
               {getSeatData(rowNumber * 6 + 5)?.seat &&
-              getSeatData(rowNumber * 6 + 5)?.seat !== 4 ? (
+              getSeatData(rowNumber * 6 + 5)?.seat !== errorSeat ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
@@ -480,7 +483,7 @@ export default function SeatsTable({
                 )
               ) : (
                 <div className="text-xs">
-                  {getSeatData(rowNumber * 6 + 5)?.seat === 4
+                  {getSeatData(rowNumber * 6 + 5)?.seat === errorSeat
                     ? "Error"
                     : rowNumber * 6 + 5}
                 </div>
@@ -491,7 +494,7 @@ export default function SeatsTable({
               onClick={() => onClick(rowNumber * 6 + 6)}
             >
               {getSeatData(rowNumber * 6 + 6)?.seat &&
-              getSeatData(rowNumber * 6 + 6)?.seat !== 4 ? (
+              getSeatData(rowNumber * 6 + 6)?.seat !== errorSeat ? (
                 onSeatChange ? (
                   // 회원가입 페이지: profileImage만 표시
                   <div className="w-full h-20 flex items-center justify-center">
@@ -534,7 +537,7 @@ export default function SeatsTable({
                 )
               ) : (
                 <div className="text-xs">
-                  {getSeatData(rowNumber * 6 + 6)?.seat === 4
+                  {getSeatData(rowNumber * 6 + 6)?.seat === errorSeat
                     ? "Error"
                     : rowNumber * 6 + 6}
                 </div>

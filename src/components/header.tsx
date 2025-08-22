@@ -75,6 +75,15 @@ export default function Header() {
                 >
                   {user.name}님
                 </span>
+                <Link href="/profile/edit">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 transition-all duration-200"
+                  >
+                    회원정보 변경
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"
@@ -155,6 +164,17 @@ export default function Header() {
                     <p className="text-sm text-gray-500">환영합니다</p>
                   </div>
                 </div>
+                <Link
+                  href="/profile/edit"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                  >
+                    회원정보 변경
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   onClick={handleLogout}
