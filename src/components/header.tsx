@@ -6,9 +6,12 @@ import { Button } from "./ui/button";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { supabase } from "@/utils/client";
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -23,13 +26,15 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error("로그아웃에 실패했습니다:", error);
     logout();
     router.push("/sign-in");
   };
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsMobileMenuOpen((isOpen) => !isOpen);
   };
 
   return (
@@ -53,26 +58,21 @@ export default function Header() {
                 src="/logo.png"
                 alt="후라이잉 로고"
                 fill
+                sizes="(min-width: 1024px) 64px, 56px"
                 className="object-contain transition-transform group-hover:scale-105"
                 priority
               />
             </div>
-            <h1
-              className="text-lg lg:text-xl font-bold text-yellow-700 group-hover:text-yellow-800 transition-colors"
-              style={{ fontFamily: "'BagelFatOne-Regular', sans-serif" }}
-            >
+            <span className="text-lg lg:text-xl font-bold text-yellow-700 group-hover:text-yellow-800 transition-colors">
               후라이잉
-            </h1>
+            </span>
           </Link>
 
           {/* 데스크톱 네비게이션 */}
           <nav className="hidden md:flex items-center gap-6">
             {isAuthenticated && user ? (
               <div className="flex items-center gap-4">
-                <span
-                  className="text-sm text-gray-700 font-medium"
-                  style={{ fontFamily: "'BagelFatOne-Regular', sans-serif" }}
-                >
+                <span className="text-sm text-gray-700 font-medium">
                   {user.name}님
                 </span>
                 <Link href="/profile/edit">
@@ -109,6 +109,8 @@ export default function Header() {
               onClick={toggleMobileMenu}
               className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
               aria-label="메뉴 열기"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-account-menu"
             >
               <svg
                 className="w-6 h-6"
@@ -148,17 +150,15 @@ export default function Header() {
 
         {/* 모바일 메뉴 - 로그인 상태일 때만 표시 */}
         {isAuthenticated && user && isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md">
+          <div
+            id="mobile-account-menu"
+            className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md"
+          >
             <div className="px-4 py-4 space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <div>
-                    <p
-                      className="font-medium text-gray-900"
-                      style={{
-                        fontFamily: "'BagelFatOne-Regular', sans-serif",
-                      }}
-                    >
+                    <p className="font-medium text-gray-900">
                       {user.name}님
                     </p>
                     <p className="text-sm text-gray-500">환영합니다</p>

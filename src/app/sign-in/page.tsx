@@ -47,7 +47,8 @@ const formSchema = z.object({
 function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, isAuthenticated } = useAuthStore();
+  const login = useAuthStore((state) => state.login);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isResendingEmail, setIsResendingEmail] = useState(false);
 
   // URL에서 redirect 파라미터 가져오기
@@ -106,14 +107,14 @@ function SignInContent() {
           return;
         }
 
-        // Zustand 스토어에 사용자 정보와 토큰 저장
+        // Supabase 세션은 클라이언트가 관리하고 화면에는 최소 사용자 정보만 보관한다.
         const user = {
           id: data.user.id,
           email: data.user.email!,
           name: data.user.user_metadata?.username || data.user.email!,
         };
 
-        login(user, data.session.access_token);
+        login(user);
 
         toast.success("로그인되었습니다! 🎉");
         router.push(redirectPath);

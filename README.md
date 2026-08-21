@@ -1,143 +1,77 @@
-# 🪑 후라이이잉 - 좌석 관리 시스템
+# Fryiing (후라이잉)
 
-Next.js와 Supabase를 활용한 실시간 좌석 관리 플랫폼입니다.
+코호트 구성원이 좌석을 고르고 자기소개와 공유 링크를 등록하는 좌석형 프로필 디렉터리입니다. 4명이 함께 만든 팀 프로젝트로, 빈 좌석에서 가입을 시작하고 등록된 좌석을 누르면 구성원이 공유한 페이지로 이동합니다.
 
-## 🚀 기술 스택
+> 이 저장소는 2025년 팀 프로젝트를 포트폴리오용으로 보존한 버전입니다. [공개 데모](https://fryiing.vercel.app)는 기존 화면 탐색용이며, 새로운 개인정보가 쌓이지 않도록 회원가입을 기본적으로 꺼 두었습니다.
 
-### Frontend
+## 핵심 흐름
 
-- **Next.js 15** - React 기반 풀스택 프레임워크
-- **TypeScript** - 타입 안전성 보장
-- **Tailwind CSS** - 유틸리티 퍼스트 CSS 프레임워크
-- **Radix UI** - 접근성 고려한 UI 컴포넌트
-- **Zustand** - 상태 관리 라이브러리
+```mermaid
+flowchart LR
+  A[좌석 현황 조회] --> B{좌석 상태}
+  B -->|등록됨| C[프로필·공유 링크 열기]
+  B -->|비어 있음| D[회원가입 화면]
+  D --> E[인증·프로필·좌석 저장]
+  E --> A
+```
 
-### Backend & Database
+- 30개 좌석을 한눈에 확인하는 반응형 좌석표
+- 이메일 기반 Supabase 인증과 세션 동기화
+- 닉네임, 소개, 프로필 이미지, 공유 URL 등록 및 수정
+- 등록된 좌석에서 외부 공유 페이지로 이동
+- 로딩·오류 상태, 키보드 조작, 안전한 외부 링크 처리
 
-- **Supabase** - 백엔드리스 플랫폼
-- **PostgreSQL** - 관계형 데이터베이스
-- **Supabase Auth** - 인증 시스템
-- **Supabase Storage** - 파일 저장소
+현재 좌석 데이터는 페이지 진입 시 한 번 조회합니다. Supabase Realtime 구독은 구현하지 않았기 때문에 이 프로젝트를 실시간 예약 시스템으로 설명하지 않습니다.
 
-### 개발 도구
+## 제가 담당한 부분
 
-- **ESLint** - 코드 품질 관리
-- **PostCSS** - CSS 전처리
-- **Turbopack** - 빠른 개발 서버
+커밋 이력을 기준으로 다음 영역을 주도적으로 구현하고 안정화했습니다.
 
-## ✨ 주요 기능
+- Next.js와 Supabase 기반 프로젝트 구조 및 초기 연동
+- 좌석 그리드와 빈 좌석 → 회원가입 흐름
+- 인증 세션, 프로필 이미지 업로드, `userInfo` 저장·수정
+- 프로필 편집 화면과 배포·빌드 오류 정리
+- 공개 포트폴리오 전환 과정의 접근성·세션·보안 보강
 
-### 🪑 좌석 관리
+전체 팀원은 김준엽, 손민준, 최준호, 김현영이며, 저장소의 [Contributors](https://github.com/0xMegg/team2/graphs/contributors)에서 공동 작업 내역을 확인할 수 있습니다.
 
-- 실시간 좌석 현황 확인
-- 좌석 선택 및 예약
-- 사용자 프로필 연동
+## 기술 구성
 
-### 👤 사용자 인증
+- Next.js 16, React 19, TypeScript, Tailwind CSS 4
+- Supabase Auth, PostgreSQL, Storage
+- Zustand, React Hook Form, Zod, Radix UI
+- Vercel, GitHub Actions
 
-- 이메일/비밀번호 로그인
-- 회원가입 및 프로필 설정
-- 인증 상태 관리
+포트폴리오 정리 과정에서 Next.js 16으로 올리고, Supabase 세션을 별도 로컬 저장소에 중복 보관하던 구조를 제거했습니다. 신규 등록은 `NEXT_PUBLIC_ENABLE_SIGN_UP=true`일 때만 허용하며, 공유 URL은 `http`와 `https`만 열 수 있습니다.
 
-## 🛠️ 설치 및 실행
+## 로컬 실행
 
-### 1. 저장소 클론
+Node.js 22 이상이 필요합니다.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/0xMegg/team2.git
 cd team2
-```
-
-### 2. 의존성 설치
-
-```bash
-npm install
-```
-
-### 3. 환경변수 설정
-
-`.env.local` 파일을 생성하고 다음 변수들을 설정하세요:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-### 4. 개발 서버 실행
-
-```bash
+npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
+자체 Supabase 프로젝트의 공개 URL과 anon key를 `.env.local`에 넣어야 합니다. 전체 기능을 재현하려면 Auth, Storage, RLS가 적용된 `userInfo` 테이블도 별도로 구성해야 하며, 운영 데이터베이스 스키마와 정책은 이 저장소에 포함되어 있지 않습니다.
 
-## 📁 프로젝트 구조
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # 루트 레이아웃
-│   ├── page.tsx           # 메인 페이지
-│   ├── sign-in/           # 로그인 페이지
-│   └── sign-up/           # 회원가입 페이지
-├── components/             # 재사용 가능한 컴포넌트
-│   ├── ui/                # 기본 UI 컴포넌트
-│   ├── auth-guard.tsx     # 인증 가드
-│   └── seatsTable.tsx     # 좌석 테이블
-├── lib/                   # 유틸리티 함수
-│   ├── constants.ts       # 상수 정의
-│   └── utils.ts           # 유틸리티 함수
-├── stores/                # 상태 관리
-│   └── auth.ts            # 인증 상태 관리
-└── utils/                 # 클라이언트 설정
-    └── client.ts          # Supabase 클라이언트
-```
-
-## 🔧 개발 가이드
-
-### 코드 스타일
-
-- TypeScript 엄격 모드 사용
-- ESLint 규칙 준수
-- 컴포넌트별 파일 분리
-
-### 상태 관리
-
-- Zustand를 통한 전역 상태 관리
-- React Hook Form을 통한 폼 관리
-
-### 에러 처리
-
-- 중앙화된 에러 핸들링
-- 사용자 친화적 에러 메시지
-- 개발/프로덕션 환경별 로깅
-
-## 🚀 배포
-
-### Vercel 배포 (권장)
-
-1. GitHub 저장소 연결
-2. 환경변수 설정
-3. 자동 배포 설정
-
-### 수동 배포
+## 검증
 
 ```bash
+npm run lint
+npm run typecheck
 npm run build
-npm start
+npm audit --audit-level=high
 ```
 
-## 📝 라이센스
+GitHub Actions가 같은 검사를 pull request와 `main` 브랜치에서 수행합니다.
 
-MIT License
+## 한계와 다음 단계
 
-## 👥 팀원
-
-- [팀원 1] - Frontend 개발
-- [팀원 2] - Backend 개발
-- [팀원 3] - UI/UX 디자인
-
----
-
-**개발 기간**: 2024년 7월  
-**프로젝트 유형**: 팀 프로젝트 (포트폴리오용 개선)
+- 외부 Supabase 프로젝트에 의존해 별도 백엔드 구성 없이는 데이터 기능을 재현할 수 없습니다.
+- 좌석 변경을 실시간 구독하지 않으므로 새로고침 전에는 다른 사용자의 변경이 반영되지 않습니다.
+- 자동화된 브라우저 시나리오 테스트는 아직 없습니다.
+- 현재 공개 배포는 보존용 데모이며 신규 회원가입을 받지 않습니다.

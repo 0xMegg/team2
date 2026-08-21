@@ -15,6 +15,7 @@ Object.entries(requiredEnvVars).forEach(([key, value]) => {
 export const env = {
   SUPABASE_URL: requiredEnvVars.NEXT_PUBLIC_SUPABASE_URL!,
   SUPABASE_ANON_KEY: requiredEnvVars.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  ENABLE_SIGN_UP: process.env.NEXT_PUBLIC_ENABLE_SIGN_UP === "true",
 } as const;
 
 // 환경변수 타입 정의
