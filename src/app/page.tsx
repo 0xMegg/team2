@@ -11,7 +11,7 @@ interface SeatData {
   profileImage?: string;
   userName: string;
   title?: string;
-  // 다른 필요한 필드들도 추가할 수 있습니다
+  url?: string;
 }
 
 export default function Home() {
@@ -29,7 +29,7 @@ export default function Home() {
         if (!active) return;
 
         if (error) {
-          console.error("좌석 정보를 불러오지 못했습니다:", error);
+          console.warn("좌석 정보를 불러오지 못했습니다:", error);
           setLoadError(true);
         } else {
           setLoadError(false);
@@ -58,15 +58,18 @@ export default function Home() {
               <p role="status" className="rounded-lg bg-white/80 px-4 py-2">
                 좌석 정보를 불러오는 중입니다.
               </p>
-            ) : loadError ? (
-              <p
-                role="alert"
-                className="rounded-lg bg-red-50 px-4 py-2 text-red-800"
-              >
-                현재 좌석 정보를 표시할 수 없습니다.
-              </p>
             ) : (
-              <SeatsTable seatsData={seatsData} />
+              <>
+                {loadError && (
+                  <p
+                    role="status"
+                    className="rounded-lg bg-amber-50 px-4 py-2 text-center text-sm text-amber-900"
+                  >
+                    보존된 데이터 연결이 종료되어 빈 좌석 미리보기를 표시합니다.
+                  </p>
+                )}
+                <SeatsTable seatsData={seatsData} />
+              </>
             )}
           </div>
         </div>

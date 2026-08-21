@@ -118,9 +118,11 @@ export default function EggBackground() {
               filter: `blur(${imageState.blur}px)`,
               zIndex: imageState.zIndex,
               opacity: imageState.opacity,
+              height: "auto",
             }}
             width={config.width}
             height={config.height}
+            loading={index < 3 ? "eager" : "lazy"}
           />
         );
       })}
