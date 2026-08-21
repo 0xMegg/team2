@@ -2,8 +2,7 @@
 
 import SeatsTable from "@/components/seatsTable";
 import { supabase } from "../../utils/client";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EggBackground from "@/components/eggBackground";
 
 interface SeatData {
@@ -17,19 +16,31 @@ interface SeatData {
 
 export default function Home() {
   const [seatsData, setSeatsData] = useState<SeatData[]>([]);
-
-  async function readRows() {
-    const { data: seats, error } = await supabase.from("userInfo").select("*");
-    if (error) {
-      console.error("Error reading topics:", error);
-    } else {
-      console.log("seats:", seats);
-      setSeatsData(seats || []);
-    }
-  }
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    readRows();
+    let active = true;
+
+    void supabase
+      .from("userInfo")
+      .select("*")
+      .then(({ data: seats, error }) => {
+        if (!active) return;
+
+        if (error) {
+          console.error("좌석 정보를 불러오지 못했습니다:", error);
+          setLoadError(true);
+        } else {
+          setLoadError(false);
+          setSeatsData(seats || []);
+        }
+        setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -43,11 +54,20 @@ export default function Home() {
                 스나컴즈 2기
               </h1>
             </div>
-            <SeatsTable
-              seatsData={seatsData}
-              selectedSeat={undefined}
-              onSeatChange={undefined}
-            />
+            {isLoading ? (
+              <p role="status" className="rounded-lg bg-white/80 px-4 py-2">
+                좌석 정보를 불러오는 중입니다.
+              </p>
+            ) : loadError ? (
+              <p
+                role="alert"
+                className="rounded-lg bg-red-50 px-4 py-2 text-red-800"
+              >
+                현재 좌석 정보를 표시할 수 없습니다.
+              </p>
+            ) : (
+              <SeatsTable seatsData={seatsData} />
+            )}
           </div>
         </div>
       </div>

@@ -25,6 +25,7 @@ import SeatsTable from "@/components/seatsTable";
 import { supabase } from "@/utils/client";
 import Image from "next/image";
 import TermsDialog from "@/components/TermsDialog";
+import { env } from "@/lib/env";
 
 interface SeatData {
   id: number;
@@ -71,6 +72,11 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
+function createProfileImagePath(userId: string, file: File) {
+  const fileExt = file.name.split(".").pop() || "bin";
+  return `profile-images/${userId}/${file.lastModified}-${file.size}.${fileExt}`;
+}
+
 function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -96,17 +102,6 @@ function SignUpContent() {
     },
   });
 
-  // 기존 좌석 데이터 가져오기
-  async function readSeatsData() {
-    const { data: seats, error } = await supabase.from("userInfo").select("*");
-    if (error) {
-      console.error("Error reading seats:", error);
-    } else {
-      console.log("seats:", seats);
-      setSeatsData(seats || []);
-    }
-  }
-
   // URL에서 좌석 정보가 변경되면 폼 업데이트
   useEffect(() => {
     if (seatFromUrl) {
@@ -114,18 +109,37 @@ function SignUpContent() {
       if (seatNumber > 0 && seatNumber <= 30) {
         // 유효한 좌석번호 범위 확인
         form.setValue("seat", seatNumber);
-        console.log("URL에서 좌석번호를 읽어서 설정:", seatNumber);
       }
     }
   }, [seatFromUrl, form]);
 
   // 컴포넌트 마운트 시 좌석 데이터 가져오기
   useEffect(() => {
-    readSeatsData();
+    if (!env.ENABLE_SIGN_UP) return;
+
+    let active = true;
+    void supabase
+      .from("userInfo")
+      .select("*")
+      .then(({ data: seats, error }) => {
+        if (!active) return;
+
+        if (error) console.error("좌석 정보 로드 실패:", error);
+        else setSeatsData(seats || []);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!env.ENABLE_SIGN_UP) {
+      toast.error("포트폴리오 미리보기에서는 신규 가입을 받지 않습니다.");
+      return;
+    }
+
     try {
       // 회원가입 처리 (이미지 없이 먼저)
       const { data, error } = await supabase.auth.signUp({
@@ -172,8 +186,7 @@ function SignUpContent() {
         let profileImageUrl = "";
 
         try {
-          const fileExt = values.profileImage.name.split(".").pop();
-          const filePath = `profile-images/${user.id}/${Date.now()}.${fileExt}`;
+          const filePath = createProfileImagePath(user.id, values.profileImage);
 
           const { error: imageError } = await supabase.storage
             .from("files")
@@ -209,6 +222,7 @@ function SignUpContent() {
             userName: values.username,
             title: values.title,
             profileImage: profileImageUrl,
+            url: values.sharedUrl || "",
           },
         ]);
 
@@ -229,6 +243,7 @@ function SignUpContent() {
             userName: values.username,
             title: values.title,
             profileImage: "",
+            url: values.sharedUrl || "",
           },
         ]);
 
@@ -251,6 +266,26 @@ function SignUpContent() {
   };
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); //이미지
+
+  if (!env.ENABLE_SIGN_UP) {
+    return (
+      <div className="relative flex h-[calc(100vh-120px)] items-center justify-center bg-[#ffd90066] px-4">
+        <EggBackground />
+        <section className="relative z-10 w-full max-w-lg rounded-xl bg-white p-8 text-center shadow-sm">
+          <h1 className="text-2xl font-bold text-yellow-800">
+            포트폴리오 미리보기
+          </h1>
+          <p className="mt-4 leading-7 text-gray-700">
+            이 배포는 보관된 팀 프로젝트를 둘러보기 위한 버전입니다. 새로운
+            개인정보가 쌓이지 않도록 회원가입을 비활성화했습니다.
+          </p>
+          <Button type="button" className="mt-6" onClick={() => router.push("/")}>
+            좌석 화면으로 돌아가기
+          </Button>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -464,8 +499,9 @@ function SignUpContent() {
               <Button
                 className="self-end transition-all duration-500 ease-in-out bg-yellow-200 text-white hover:scale-105 hover:bg-yellow-300"
                 type="submit"
+                disabled={!env.ENABLE_SIGN_UP}
               >
-                완료
+                {env.ENABLE_SIGN_UP ? "완료" : "가입 비활성화"}
               </Button>
             </div>
           </div>

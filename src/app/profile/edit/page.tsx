@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState, useEffect, Suspense, useCallback } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import EggBackground from "@/components/eggBackground";
@@ -57,9 +57,15 @@ const formSchema = z.object({
   }),
 });
 
+function createProfileImagePath(userId: string, file: File) {
+  const fileExt = file.name.split(".").pop() || "bin";
+  return `profile-images/${userId}/${file.lastModified}-${file.size}.${fileExt}`;
+}
+
 function ProfileEditContent() {
   const router = useRouter();
-  const { user, updateUser } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
   const [seatsData, setSeatsData] = useState<SeatData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -77,61 +83,48 @@ function ProfileEditContent() {
     },
   });
 
-  // 기존 좌석 데이터 가져오기
-  const readSeatsData = useCallback(async () => {
-    const { data: seats, error } = await supabase.from("userInfo").select("*");
-    if (error) {
-      console.error("Error reading seats:", error);
-    } else {
-      console.log("seats:", seats);
-      setSeatsData(seats || []);
-    }
-  }, []);
-
-  // 사용자 정보 가져오기
-  const loadUserData = useCallback(async () => {
-    if (!user) {
-      return;
-    }
-
-    try {
-      // userInfo 테이블에서 사용자 정보 가져오기
-      const { data: userInfo, error } = await supabase
-        .from("userInfo")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        console.error("사용자 정보 로드 실패:", error);
-        toast.error("사용자 정보를 불러오는데 실패했습니다.");
-        return;
-      }
-
-      // 폼에 기존 데이터 설정
-      form.setValue("email", user.email || "");
-      form.setValue("username", userInfo.userName || "");
-      form.setValue("title", userInfo.title || "");
-      form.setValue("sharedUrl", userInfo.url || userInfo.sharedUrl || "");
-      form.setValue("seat", userInfo.seat || 0);
-
-      // 프로필 이미지 미리보기 설정
-      if (userInfo.profileImage) {
-        setPreviewUrl(userInfo.profileImage);
-      }
-    } catch (error) {
-      console.error("사용자 정보 로드 중 오류:", error);
-      toast.error("사용자 정보를 불러오는데 실패했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, form]);
-
-  // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
-    readSeatsData();
-    loadUserData();
-  }, [loadUserData, readSeatsData]);
+    if (!user) return;
+
+    let active = true;
+    const seatsRequest = supabase.from("userInfo").select("*");
+    const userRequest = supabase
+      .from("userInfo")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    void Promise.all([seatsRequest, userRequest]).then(
+      ([{ data: seats, error: seatsError }, { data: userInfo, error }]) => {
+        if (!active) return;
+
+        if (seatsError) {
+          console.error("좌석 정보 로드 실패:", seatsError);
+        } else {
+          setSeatsData(seats || []);
+        }
+
+        if (error || !userInfo) {
+          console.error("사용자 정보 로드 실패:", error);
+          toast.error("사용자 정보를 불러오는데 실패했습니다.");
+        } else {
+          form.setValue("email", user.email || "");
+          form.setValue("username", userInfo.userName || "");
+          form.setValue("title", userInfo.title || "");
+          form.setValue("sharedUrl", userInfo.url || userInfo.sharedUrl || "");
+          form.setValue("seat", userInfo.seat || 0);
+
+          if (userInfo.profileImage) setPreviewUrl(userInfo.profileImage);
+        }
+
+        setIsLoading(false);
+      },
+    );
+
+    return () => {
+      active = false;
+    };
+  }, [form, user]);
 
   // 제출 핸들러
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -144,8 +137,7 @@ function ProfileEditContent() {
 
       // 새 이미지가 업로드된 경우
       if (values.profileImage instanceof File) {
-        const fileExt = values.profileImage.name.split(".").pop();
-        const filePath = `profile-images/${user.id}/${Date.now()}.${fileExt}`;
+        const filePath = createProfileImagePath(user.id, values.profileImage);
 
         const { error: imageError } = await supabase.storage
           .from("files")
@@ -202,11 +194,8 @@ function ProfileEditContent() {
         userName: values.username,
         title: values.title,
         seat: values.seat,
+        url: values.sharedUrl || "",
       };
-
-      if (values.sharedUrl) {
-        updateData.url = values.sharedUrl;
-      }
 
       if (profileImageUrl) {
         updateData.profileImage = profileImageUrl;

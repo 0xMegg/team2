@@ -52,8 +52,8 @@ export const SEAT_TITLES: readonly string[] = [
 // 타입 안전성을 위한 타입 정의
 export type SeatTitle = (typeof SEAT_TITLES)[number];
 
-// 랜덤 좌석 타이틀 반환
-export function getRandomSeatTitle(): SeatTitle {
-  const randomIndex = Math.floor(Math.random() * SEAT_TITLES.length);
-  return SEAT_TITLES[randomIndex];
+// 같은 좌석에는 항상 같은 기본 타이틀을 반환한다.
+export function getSeatTitle(seatNumber: number): SeatTitle {
+  const index = Math.max(0, seatNumber - 1) % SEAT_TITLES.length;
+  return SEAT_TITLES[index];
 }
